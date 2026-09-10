@@ -373,9 +373,9 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
         <option value="unit2">Unit 2 · Going to the Movies (59 từ)</option>
         <option value="unit3">Unit 3 · Staying in Hotels (50 từ)</option>
         <option value="unit4">Unit 4 · Cars and Driving (79 từ)</option>
-        <option value="unit5">Unit 5 · Personal Care & Insurance (54 từ)</option>
+        <option value="unit5">Unit 5 · Personal Care & Insurance (56 từ)</option>
         <option value="unit6">Unit 6 · Eating Well (125 từ)</option>
-        <option value="unit7">Unit 7 · About Personality (90 từ)</option>
+        <option value="unit7">Unit 7 · About Personality (91 từ)</option>
         <option value="unit8">Unit 8 · The Arts (74 từ)</option>
         <option value="unit9">Unit 9 · Living in Cyberspace (51 từ)</option>
       </select>
@@ -807,6 +807,7 @@ const UNITS = {
   {en:"driver", syl:"driv·er", ipa:"/ˈdraɪ·və/", stress:"DRIV-er", vi:"tài xế, người lái xe", ex:"The ___ took them to a hotel.", note:"Nhấn DRIV đầu.", mnemonic:"DRIVE (lái) + ER = người lái."},
   {en:"speed", syl:"speed", ipa:"/spiːd/", stress:"SPEED", vi:"tốc độ", ex:"The vehicle maintained a ___ of 40 mph.", note:"1 âm tiết, âm /iː/ dài.", mnemonic:"SPEED quen thuộc — 'high speed'."},
   {en:"weave through", syl:"weave · through", ipa:"/ˈwiːv θruː/", stress:"WEAVE through", vi:"lạn lách qua", ex:"It took him minutes to ___ the crowd.", note:"'weave' /wiːv/, 'through' âm /θ/ đầu.", mnemonic:"WEAVE (đan) + THROUGH (qua) = 'đan qua' đám đông."},
+  {en:"traffic", syl:"traf·fic", ipa:"/ˈtræ·fɪk/", stress:"TRAF-fic", vi:"giao thông, xe cộ", ex:"The accident stopped ___ for hours.", note:"2 âm tiết, nhấn TRAF đầu.", mnemonic:"TRAFFIC — 'traffic jam' (kẹt xe)."},
   {en:"tailgate", syl:"tail·gate", ipa:"/ˈteɪl·ɡeɪt/", stress:"TAIL-gate", vi:"lái quá gần xe trước", ex:"He crashed because he was ___ing.", note:"2 âm tiết, nhấn TAIL đầu.", mnemonic:"TAIL (đuôi) + GATE (cửa) = bám sát đuôi xe trước."},
   {en:"signal", syl:"sig·nal", ipa:"/ˈsɪɡ·nəl/", stress:"SIG-nal", vi:"bật xi nhan, ra hiệu", ex:"The officer gave a ___ to the driver.", note:"Nhấn SIG đầu.", mnemonic:"SIGNAL — 'tín hiệu' trong tiếng Việt cũng có từ này."},
   {en:"turn", syl:"turn", ipa:"/tɜːn/", stress:"TURN", vi:"rẽ, quay", ex:"I am going to ___ left here.", note:"Âm /ɜː/ dài.", mnemonic:"TURN quen thuộc — 'turn left'."},
@@ -1025,6 +1026,7 @@ const UNITS = {
   {en:"rate", syl:"rate", ipa:"/reɪt/", stress:"RATE", vi:"tỉ lệ, mức", ex:"The crime ___ rose 26%.", note:"1 âm tiết.", mnemonic:"RATE — 'exchange rate' (tỷ giá)."},
   {en:"obesity", syl:"o·be·si·ty", ipa:"/əʊ·ˈbiː·sə·ti/", stress:"o-BE-si-ty", vi:"béo phì", ex:"High fat diet leads to ___.", note:"4 âm tiết, nhấn BE (thứ hai).", mnemonic:"OBESE (béo phì) + ITY."},
   {en:"extreme", syl:"ex·treme", ipa:"/ɪk·ˈstriːm/", stress:"ex-TREME", vi:"cực đoan, rất lớn", ex:"People live in ___ poverty.", note:"Nhấn TREME cuối.", mnemonic:"EXTREME — 'extreme sports'."},
+  {en:"overweight", syl:"o·ver·weight", ipa:"/ˌəʊ·və·ˈweɪt/", stress:"o-ver-WEIGHT", vi:"thừa cân", ex:"He used to be very ___.", note:"3 âm tiết, nhấn WEIGHT cuối.", mnemonic:"OVER (quá) + WEIGHT (cân) = quá cân."},
   {en:"acceptance", syl:"ac·cep·tance", ipa:"/ək·ˈsep·təns/", stress:"ac-CEP-tance", vi:"sự chấp thuận", ex:"He had an ___ from the magazine.", note:"3 âm tiết, nhấn CEP.", mnemonic:"ACCEPT + ANCE = sự chấp nhận."},
   {en:"grow", syl:"grow", ipa:"/ɡrəʊ/", stress:"GROW", vi:"lớn lên, trồng", ex:"This plant ___s best in the shade.", note:"1 âm tiết, âm /əʊ/.", mnemonic:"GROW — 'grow up' (lớn lên)."},
   {en:"frame", syl:"frame", ipa:"/freɪm/", stress:"FRAME", vi:"đóng khung", ex:"I want that photo ___d.", note:"1 âm tiết, âm /eɪ/.", mnemonic:"FRAME — 'picture frame'."},
@@ -1032,6 +1034,8 @@ const UNITS = {
   {en:"dessert", syl:"des·sert", ipa:"/dɪ·ˈzɜːt/", stress:"des-SERT", vi:"món tráng miệng", ex:"I'll make a ___.", note:"'ss' đọc /z/. Khác 'desert' (sa mạc)!", mnemonic:"DESSERT (2 S) vs DESERT (1 S — sa mạc)."},
   {en:"illness", syl:"ill·ness", ipa:"/ˈɪl·nəs/", stress:"ILL-ness", vi:"bệnh", ex:"He died after a long ___.", note:"Nhấn ILL đầu.", mnemonic:"ILL (ốm) + NESS = bệnh."},
   {en:"local", syl:"lo·cal", ipa:"/ˈləʊ·kl/", stress:"LO-cal", vi:"địa phương", ex:"Most ___ population depends on fishing.", note:"2 âm tiết, nhấn LO.", mnemonic:"LOCAL — 'local food'."},
+  {en:"terrific", syl:"ter·ri·fic", ipa:"/tə·ˈrɪ·fɪk/", stress:"ter-RI-fic", vi:"thơm ngon, tuyệt vời", ex:"Mr. Jones thought my paper was ___.", note:"3 âm tiết, nhấn RI (giữa).", mnemonic:"TERRIFIC — nghĩa 'tuyệt' (khác 'terrible')."},
+  {en:"terrible", syl:"ter·ri·ble", ipa:"/ˈter·ə·bl/", stress:"TER-ri-ble", vi:"khủng khiếp", ex:"The stranger gave a ___ smile.", note:"3 âm tiết, nhấn TER đầu.", mnemonic:"TERROR + IBLE = đáng sợ. Trái với TERRIFIC."},
   {en:"smell", syl:"smell", ipa:"/smel/", stress:"SMELL", vi:"ngửi mùi; mùi", ex:"I can ___ something burning.", note:"1 âm tiết.", mnemonic:"SMELL — 'good smell'."},
   {en:"taste", syl:"taste", ipa:"/teɪst/", stress:"TASTE", vi:"nếm; mùi vị", ex:"She had never ___d ice cream.", note:"1 âm tiết.", mnemonic:"TASTE — 'good taste'."},
   {en:"salty", syl:"salt·y", ipa:"/ˈsɔːl·ti/", stress:"SALT-y", vi:"vị mặn", ex:"I love ___ snacks.", note:"Nhấn SALT đầu.", mnemonic:"SALT (muối) + Y = có muối."},
@@ -1187,6 +1191,7 @@ const UNITS = {
   {en:"realistic", syl:"re·al·is·tic", ipa:"/ˌrɪə·ˈlɪs·tɪk/", stress:"re-al-IS-tic", vi:"thực tế", ex:"Jobs are scarce, so be ___.", note:"4 âm tiết, nhấn IS (thứ ba).", mnemonic:"REAL + ISTIC = có tính thực tế."},
   {en:"traditional", syl:"tra·di·tion·al", ipa:"/trə·ˈdɪʃ·ə·nl/", stress:"tra-DI-tion-al", vi:"truyền thống", ex:"She's very ___ in her ideas.", note:"4 âm tiết, nhấn DI (thứ hai).", mnemonic:"TRADITION + AL."},
   {en:"modern", syl:"mod·ern", ipa:"/ˈmɒd·ən/", stress:"MOD-ern", vi:"hiện đại", ex:"We're in a ___-looking building.", note:"Nhấn MOD đầu.", mnemonic:"MODERN — 'modern art'."},
+  {en:"recommend", syl:"rec·om·mend", ipa:"/ˌrek·ə·ˈmend/", stress:"rec-om-MEND", vi:"giới thiệu, đề xuất", ex:"George ___ed some local architects.", note:"3 âm tiết, nhấn MEND cuối.", mnemonic:"RE + COMMEND (khen) = giới thiệu."},
   {en:"pyramid", syl:"pyr·a·mid", ipa:"/ˈpɪr·ə·mɪd/", stress:"PYR-a-mid", vi:"kim tự tháp", ex:"The acrobats formed a ___.", note:"3 âm tiết, nhấn PYR.", mnemonic:"PYRAMID — Ai Cập."},
   {en:"add", syl:"add", ipa:"/æd/", stress:"ADD", vi:"cộng thêm", ex:"This ___ed to their problems.", note:"1 âm tiết.", mnemonic:"ADD — '2 + 2 = 4'."},
   {en:"create", syl:"cre·ate", ipa:"/kri·ˈeɪt/", stress:"cre-ATE", vi:"tạo nên", ex:"He ___d a thirty-acre lake.", note:"2 âm tiết, nhấn ATE.", mnemonic:"CREATE → CREATION."},
@@ -1237,6 +1242,7 @@ const UNITS = {
   {en:"theme", syl:"theme", ipa:"/θiːm/", stress:"THEME", vi:"chủ đề", ex:"The ___ of the sermon was reverence.", note:"Âm /θ/ đầu, /iː/ dài.", mnemonic:"THEME — 'theme song'."},
   {en:"touch", syl:"touch", ipa:"/tʌtʃ/", stress:"TOUCH", vi:"chạm", ex:"Don't ___ her stuff.", note:"'ou' đọc /ʌ/.", mnemonic:"TOUCH — 'touch screen'."},
   {en:"explore", syl:"ex·plore", ipa:"/ɪk·ˈsplɔː/", stress:"ex-PLORE", vi:"khám phá", ex:"The project encourages children to ___.", note:"Nhấn PLORE cuối.", mnemonic:"EXPLORE — 'Google Explorer'."},
+  {en:"attract", syl:"at·tract", ipa:"/ə·ˈtrækt/", stress:"at-TRACT", vi:"thu hút", ex:"The circus is ___ing huge crowds.", note:"Nhấn TRACT cuối.", mnemonic:"AT + TRACT (kéo) = kéo về phía mình."},
   {en:"architect", syl:"ar·chi·tect", ipa:"/ˈɑː·kɪ·tekt/", stress:"AR-chi-tect", vi:"kiến trúc sư", ex:"He was the ___ of the health service.", note:"3 âm tiết, 'ch' đọc /k/. Nhấn AR.", mnemonic:"ARCHITECT — 'ch' đọc /k/ như trong 'chemistry'."},
   {en:"carve", syl:"carve", ipa:"/kɑːv/", stress:"CARVE", vi:"khắc chạm", ex:"The wood was ___d with runes.", note:"Âm /ɑː/ dài.", mnemonic:"CARVE — 'carve a pumpkin'."},
   {en:"metal", syl:"met·al", ipa:"/ˈmet·l/", stress:"MET-al", vi:"kim loại", ex:"Aluminum readily conducts heat as a ___.", note:"Nhấn MET đầu.", mnemonic:"METAL — 'heavy metal'."},
