@@ -106,6 +106,20 @@ nav.tabs{display:flex;gap:8px;flex-wrap:wrap}
 .note{display:inline-block;margin-top:8px;font-size:14px;background:rgba(224,168,46,.28);border-radius:8px;padding:4px 10px}
 .mnemonic{display:inline-block;margin-top:8px;margin-left:6px;font-size:14px;background:rgba(27,122,98,.16);border-radius:8px;padding:4px 10px;color:var(--teal);font-weight:600}
 .mnemonic::before{content:"💡 Mẹo: ";color:var(--teal);font-weight:700}
+.unit-select{
+  padding:7px 12px;border-radius:8px;font-family:inherit;font-size:13.5px;font-weight:600;
+  background:var(--navy-3);color:var(--paper);border:1.5px solid rgba(241,231,210,.35);
+  cursor:pointer;margin-top:6px;max-width:100%;
+}
+.unit-select:hover{border-color:var(--gold)}
+.unit-select option{background:var(--navy-2);color:var(--paper)}
+.btn.gold.playing{animation:pulse 1.1s infinite}
+.autoplay-panel{margin-top:18px;padding:14px 16px;border-radius:12px;background:rgba(18,32,54,.06);border:1.5px dashed rgba(18,32,54,.22)}
+.autoplay-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center}
+.autoplay-row label{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:rgba(18,32,54,.85)}
+.ap-num{width:52px;padding:5px 8px;border-radius:6px;border:1.5px solid rgba(18,32,54,.25);font:inherit;font-size:14px;text-align:center}
+.ap-sel{padding:5px 8px;border-radius:6px;border:1.5px solid rgba(18,32,54,.25);font:inherit;font-size:14px;background:#fff}
+.autoplay-status{font-size:13px;color:rgba(18,32,54,.6);margin-top:8px;font-style:italic;min-height:18px;text-align:center}
 .ex{margin:16px auto 0;max-width:52ch;font-size:17px;color:rgba(18,32,54,.8);border-top:1.5px dashed rgba(18,32,54,.25);padding-top:14px}
 .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 
@@ -353,7 +367,11 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
     <div class="seal" aria-hidden="true">☺</div>
     <div>
       <h1>Greetings &amp; Customs</h1>
-      <p>Top Notch 2 — Unit 1: Getting Acquainted (32 từ, có phát âm chuẩn IPA + mẹo nhớ)</p>
+      <p id="unitSubtitle">Top Notch 2 — Unit 1: Getting Acquainted (32 từ, có phát âm chuẩn IPA + mẹo nhớ)</p>
+      <select class="unit-select" id="unitSelect" aria-label="Chọn Unit">
+        <option value="unit1">Unit 1 · Getting Acquainted (32 từ)</option>
+        <option value="unit2">Unit 2 · Going to the Movies (59 từ)</option>
+      </select>
     </div>
   </div>
   <nav class="tabs" role="tablist" aria-label="Chọn hoạt động">
@@ -398,6 +416,36 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
       <div class="row">
         <button class="btn ghost small" id="btnPrev">← Từ trước</button>
         <button class="btn ghost small" id="btnNext">Từ tiếp →</button>
+      </div>
+
+      <div class="autoplay-panel" role="group" aria-label="Tự động nghe và nhép theo">
+        <div class="autoplay-row">
+          <label>Lặp mỗi từ
+            <input type="number" id="apRepeat" min="1" max="10" value="3" class="ap-num">lần
+          </label>
+          <label>Tốc độ
+            <select id="apRate" class="ap-sel">
+              <option value="0.55">Rất chậm (0.55)</option>
+              <option value="0.75">Chậm (0.75)</option>
+              <option value="0.9" selected>Vừa (0.9)</option>
+              <option value="1">Bình thường (1.0)</option>
+              <option value="1.2">Nhanh (1.2)</option>
+            </select>
+          </label>
+          <label>Ngắt giữa các lần
+            <select id="apGap" class="ap-sel">
+              <option value="400">0.4s (nhanh)</option>
+              <option value="900" selected>0.9s (nhép theo)</option>
+              <option value="1500">1.5s (nhép chậm)</option>
+              <option value="2500">2.5s (nhép rõ)</option>
+            </select>
+          </label>
+          <label>Kèm câu ví dụ
+            <input type="checkbox" id="apEx">
+          </label>
+          <button class="btn gold" id="btnAutoPlay">▶ Bắt đầu tự học</button>
+        </div>
+        <div class="autoplay-status" id="apStatus">Bấm "Bắt đầu tự học" — máy sẽ đọc từng từ nhiều lần, bạn nhép theo. Hết Unit sẽ tự quay lại từ đầu.</div>
       </div>
     </div>
 
@@ -587,8 +635,11 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
 "use strict";
 
 /* ---------------- Dữ liệu ---------------- */
-/* Đơn vị 1 — Getting Acquainted (30 từ, khớp giáo trình Top Notch 2 ENT203) */
-const DEFAULT_WORDS = [
+/* Giáo trình Top Notch 2 ENT203 — mỗi unit là một danh sách từ độc lập */
+const UNITS = {
+  unit1: {
+    title: "Unit 1: Getting Acquainted",
+    words: [
   {en:"greeting", syl:"greet·ing", ipa:"/ˈɡriː·tɪŋ/", stress:"GREET-ing", vi:"lời chào hỏi", ex:"He nodded his head in ___.", note:"Đọc /ˈɡriː-tɪŋ/, âm /iː/ dài.", mnemonic:"'greet' + 'ing' — như 'greeting card' quen thuộc, nhấn GREET đầu."},
   {en:"bow", syl:"bow", ipa:"/baʊ/", stress:"BOW", vi:"cúi chào", ex:"Some people ___.", note:"Đọc /boʊ/ khi nghĩa là cái nơ hoặc cánh cung.", mnemonic:"BOW như âm 'bàu' — 1 âm tiết, gập người xuống."},
   {en:"shake hands", syl:"shake · hands", ipa:"/ˌʃeɪk ˈhændz/", stress:"shake HANDS", vi:"bắt tay", ex:"They ___ when they meet.", note:"'hands' số nhiều vì bắt bằng hai bàn tay.", mnemonic:"Ghép 2 từ đơn — nhấn HANDS mạnh hơn, tưởng tượng 2 bàn tay lắc."},
@@ -621,7 +672,75 @@ const DEFAULT_WORDS = [
   {en:"thrilling", syl:"thrill·ing", ipa:"/ˈθrɪl·ɪŋ/", stress:"THRILL-ing", vi:"hồi hộp, rùng mình (tích cực)", ex:"The trip was ___.", note:"Bắt đầu bằng âm /θ/ — đặt lưỡi giữa hai hàm răng.", mnemonic:"THRILL (cảm giác mạnh) + ING → nhớ 'thriller' của Michael Jackson."},
   {en:"frightening", syl:"fright·en·ing", ipa:"/ˈfraɪt·n·ɪŋ/", stress:"FRIGHT-en-ing", vi:"đáng sợ, kinh khủng", ex:"The trip was ___.", note:"'gh' câm, chỉ đọc /fraɪt/. 'en' đọc /n̩/ rất nhẹ.", mnemonic:"FRIGHT = sợ hãi (như 'stage fright'). Ing = đang → đang gây sợ."},
   {en:"disgusting", syl:"dis·gust·ing", ipa:"/dɪs·ˈɡʌs·tɪŋ/", stress:"dis-GUS-ting", vi:"kinh tởm, ghê tởm", ex:"The food was ___.", note:"Nhấn GUS giữa, âm /ʌ/ ngắn.", mnemonic:"DIS (phủ định) + GUST (cơn) → cơn ghê tởm ập tới. Nhấn GUS."}
-];
+    ]
+  },
+  unit2: {
+    title: "Unit 2: Going to the Movies",
+    words: [
+  {en:"wish list", syl:"wish · list", ipa:"/ˈwɪʃ ˌlɪst/", stress:"WISH-list", vi:"danh sách mong muốn", ex:"I have a ___ for Christmas.", note:"Ghép 2 từ đơn, nhấn WISH đầu.", mnemonic:"WISH (ước) + LIST (danh sách) = danh sách các điều ước."},
+  {en:"blockbuster", syl:"block·bust·er", ipa:"/ˈblɒk·bʌs·tə/", stress:"BLOCK-bust-er", vi:"phim bom tấn, ăn khách", ex:"Endgame was the greatest ___ of this year.", note:"3 âm tiết, nhấn BLOCK đầu.", mnemonic:"BLOCK (khối) + BUSTER (đập nổ) = phim làm 'nổ tung' cả phòng vé."},
+  {en:"fall in love", syl:"fall · in · love", ipa:"/ˌfɔːl ɪn ˈlʌv/", stress:"fall in LOVE", vi:"yêu, phải lòng", ex:"They ___ in Paris.", note:"Cụm 3 từ đơn, trọng âm chính ở LOVE cuối.", mnemonic:"FALL (rơi) + IN LOVE = rơi vào tình yêu — hình ảnh 'rơi tự do'."},
+  {en:"disaster", syl:"dis·as·ter", ipa:"/dɪ·ˈzɑː·stə/", stress:"dis-AS-ter", vi:"thảm họa, thiên tai", ex:"I think this is a ___ movie.", note:"'s' đọc /z/ (không phải /s/). Nhấn AS giữa.", mnemonic:"DIS (xấu) + ASTER (star = sao) = 'sao xấu' → thảm họa (nghĩa cổ)."},
+  {en:"poor artist", syl:"poor · art·ist", ipa:"/ˌpʊə ˈɑː·tɪst/", stress:"poor AR-tist", vi:"nghệ sĩ nghèo", ex:"He worked for 20 years but he was always a ___.", note:"'poor' đọc /pʊə/ (giọng Anh), không /pɔːr/.", mnemonic:"POOR (nghèo) + ARTIST (nghệ sĩ) — nhấn AR-tist."},
+  {en:"sink-sank-sunk", syl:"sink · sank · sunk", ipa:"/sɪŋk · sæŋk · sʌŋk/", stress:"SINK-SANK-SUNK", vi:"chìm (V1-V2-V3)", ex:"Wood does not ___ in water.", note:"3 dạng động từ — chú ý nguyên âm đổi /ɪ/ → /æ/ → /ʌ/.", mnemonic:"Nhớ chuỗi 'i-a-u' (SỊNK - SẶNK - SẮNK) — như tiếng nước chảy."},
+  {en:"magnificent", syl:"mag·nif·i·cent", ipa:"/mæɡ·ˈnɪ·fɪ·snt/", stress:"mag-NIF-i-cent", vi:"tráng lệ, vĩ đại", ex:"Titanic was a ___ ship.", note:"4 âm tiết — nhấn NIF (thứ hai).", mnemonic:"MAGN- (lớn, như 'magnify') + FICENT = 'to lớn hoành tráng'."},
+  {en:"epic", syl:"ep·ic", ipa:"/ˈep·ɪk/", stress:"EP-ic", vi:"sử thi, hoành tráng", ex:"Titanic is an ___ classic romance.", note:"'e' đầu ngắn /e/, không phải /iː/.", mnemonic:"EPIC như 'Epic Games' (LMHT, Fortnite) — hoành tráng đình đám."},
+  {en:"classic", syl:"clas·sic", ipa:"/ˈklæs·ɪk/", stress:"CLAS-sic", vi:"cổ điển, kinh điển", ex:"Titanic is an epic ___ romance.", note:"Nhấn CLAS đầu, kết thúc /-ɪk/ ngắn.", mnemonic:"CLASS (hạng) + IC = 'hạng nhất' → kinh điển."},
+  {en:"romance", syl:"ro·mance", ipa:"/rəʊ·ˈmæns/", stress:"ro-MANCE", vi:"lãng mạn, chuyện tình", ex:"Titanic is an epic classic ___.", note:"Giọng Anh nhấn MANCE cuối, giọng Mỹ có khi nhấn RO đầu.", mnemonic:"ROMEO + ANCE = chuyện tình kiểu Romeo & Juliet."},
+  {en:"drama", syl:"dra·ma", ipa:"/ˈdrɑː·mə/", stress:"DRA-ma", vi:"kịch, bi kịch", ex:"She studied English and ___ at college.", note:"Âm /ɑː/ đầu dài.", mnemonic:"DRAMA như 'phim drama Hàn' — kịch tính, chuyện tình cảm."},
+  {en:"thrilling action movie", syl:"thrill·ing · ac·tion · mov·ie", ipa:"/ˈθrɪl·ɪŋ ˈæk·ʃn ˈmuː·vi/", stress:"THRILL-ing AC-tion MOV-ie", vi:"phim hành động gay cấn", ex:"This ___ will keep you on the edge of your seat.", note:"Cụm 3 từ — mỗi từ nhấn âm tiết đầu.", mnemonic:"THRILL (cảm giác mạnh) + ACTION (hành động) + MOVIE."},
+  {en:"on the edge of your seat", syl:"on · the · edge · of · your · seat", ipa:"/ɒn ðə ˌedʒ əv jə ˈsiːt/", stress:"on the edge of your SEAT", vi:"đứng ngồi không yên, hồi hộp", ex:"The film kept me ___.", note:"Cụm dài — nhấn SEAT cuối.", mnemonic:"EDGE (mép) + SEAT (ghế) = ngồi ở mép ghế vì hồi hộp."},
+  {en:"violent", syl:"vi·o·lent", ipa:"/ˈvaɪ·ə·lənt/", stress:"VI-o-lent", vi:"bạo lực, hung tợn", ex:"The more ___ scenes were cut on television.", note:"3 âm tiết, nhấn VI đầu, âm /aɪ/ dài.", mnemonic:"VIOLENT như 'violin' (đàn) + T — nhưng nghĩa hoàn toàn khác: bạo lực."},
+  {en:"adaptation", syl:"ad·ap·ta·tion", ipa:"/ˌæ·dæp·ˈteɪ·ʃn/", stress:"ad-ap-TA-tion", vi:"sự chuyển thể", ex:"He starred in the film ___ of the novel.", note:"4 âm tiết, nhấn TA (thứ ba).", mnemonic:"ADAPT (thích nghi) + ATION → 'sự thích nghi' → chuyển thể sang phim."},
+  {en:"novel", syl:"nov·el", ipa:"/ˈnɒv·l/", stress:"NOV-el", vi:"tiểu thuyết", ex:"He starred in the film adaptation of a best-selling ___.", note:"Nhấn NOV đầu.", mnemonic:"NOVEL có nghĩa cả 'mới lạ' và 'tiểu thuyết' — sách kể chuyện mới."},
+  {en:"story", syl:"sto·ry", ipa:"/ˈstɔː·ri/", stress:"STO-ry", vi:"câu chuyện", ex:"It is a wonderful ___.", note:"Nhấn STO đầu, âm /ɔː/ dài.", mnemonic:"STORY quen thuộc — 'kể chuyện' là 'tell a story'."},
+  {en:"main character", syl:"main · char·ac·ter", ipa:"/ˌmeɪn ˈkær·ək·tə/", stress:"main CHAR-ac-ter", vi:"nhân vật chính", ex:"Harry Potter is the ___ of the novel.", note:"'ch' đọc /k/, không /tʃ/.", mnemonic:"MAIN (chính) + CHARACTER (nhân vật) — nhớ 'ch' câm như /k/."},
+  {en:"fictional", syl:"fic·tion·al", ipa:"/ˈfɪk·ʃən·l/", stress:"FIC-tion-al", vi:"viễn tưởng, hư cấu", ex:"Harry Potter is a ___ novel.", note:"3 âm tiết, nhấn FIC đầu.", mnemonic:"FICTION (hư cấu) + AL — 'thuộc về hư cấu'."},
+  {en:"tragedy", syl:"trag·e·dy", ipa:"/ˈtræ·dʒə·di/", stress:"TRAG-e-dy", vi:"bi kịch", ex:"His reckless driving ended in ___.", note:"'g' đọc /dʒ/. Nhấn TRAG đầu.", mnemonic:"TRAG như 'tragic' — bi kịch."},
+  {en:"in the mood for", syl:"in · the · mood · for", ipa:"/ɪn ðə ˈmuːd fə/", stress:"in the MOOD for", vi:"có tâm trạng cho, thèm", ex:"I am ___ some movies.", note:"Nhấn MOOD giữa cụm.", mnemonic:"MOOD (tâm trạng) — 'trong tâm trạng muốn xem'."},
+  {en:"a bunch of", syl:"a · bunch · of", ipa:"/ə ˈbʌntʃ əv/", stress:"a BUNCH of", vi:"một chùm, rất nhiều", ex:"They will give us ___ problems.", note:"'bunch' âm /ʌ/ ngắn.", mnemonic:"BUNCH như 'a bunch of grapes' (chùm nho) → nhiều."},
+  {en:"frankly", syl:"frank·ly", ipa:"/ˈfræŋk·li/", stress:"FRANK-ly", vi:"thẳng thắn", ex:"She spoke very ___ about her experiences.", note:"Nhấn FRANK đầu.", mnemonic:"FRANK (thẳng thắn, cũng là tên) + LY = một cách thẳng thắn."},
+  {en:"bloody", syl:"blood·y", ipa:"/ˈblʌd·i/", stress:"BLOOD-y", vi:"đẫm máu, tàn bạo", ex:"It will be ___.", note:"'oo' đọc /ʌ/ (như 'blood'), KHÔNG /uː/.", mnemonic:"BLOOD (máu) + Y — đầy máu me."},
+  {en:"spectacular", syl:"spec·tac·u·lar", ipa:"/spek·ˈtæk·jə·lə/", stress:"spec-TAC-u-lar", vi:"ngoạn mục, hùng vĩ", ex:"There was a ___ sunset last night.", note:"4 âm tiết, nhấn TAC (thứ hai).", mnemonic:"SPECTACLE (cảnh tượng) + AR = đáng để chiêm ngưỡng."},
+  {en:"can't stand", syl:"can't · stand", ipa:"/kɑːnt ˈstænd/", stress:"can't STAND", vi:"không chịu được", ex:"I ___ you anymore.", note:"'can't' giọng Anh /kɑːnt/, giọng Mỹ /kænt/.", mnemonic:"CAN'T (không thể) + STAND (chịu đựng) = không chịu nổi."},
+  {en:"animated movie", syl:"an·i·mat·ed · mov·ie", ipa:"/ˈæn·ɪ·meɪ·tɪd ˈmuː·vi/", stress:"AN-i-mat-ed MOV-ie", vi:"phim hoạt hình", ex:"I can't stand ___s.", note:"'animated' 4 âm tiết, nhấn AN đầu.", mnemonic:"ANIMATE (làm sống động) + D + MOVIE = phim tô 'sống động' = hoạt hình."},
+  {en:"it's my treat", syl:"it's · my · treat", ipa:"/ɪts maɪ ˈtriːt/", stress:"it's my TREAT", vi:"tôi khao, để tôi trả", ex:"Don't worry, ___.", note:"Nhấn TREAT cuối.", mnemonic:"TREAT = 'đãi' — 'món quà đãi' của tôi = tôi bao."},
+  {en:"career", syl:"ca·reer", ipa:"/kə·ˈrɪə/", stress:"ca-REER", vi:"sự nghiệp", ex:"I have followed her ___ all these years.", note:"Nhấn REER cuối. Chú ý: KHÁC với 'carrier' (người vận chuyển).", mnemonic:"ca-REER → 'cờ-RÍ-ờ'. Cả đời theo REER."},
+  {en:"except", syl:"ex·cept", ipa:"/ɪk·ˈsept/", stress:"ex-CEPT", vi:"ngoại trừ", ex:"The museum is open daily ___ Mondays.", note:"'x' đọc /ks/. Đừng nhầm với 'accept' (chấp nhận).", mnemonic:"EX (ngoài) + CEPT (lấy) = 'lấy ra ngoài' → loại trừ."},
+  {en:"theater", syl:"the·a·ter", ipa:"/ˈθɪə·tə/", stress:"THE-a-ter", vi:"nhà hát, rạp chiếu", ex:"I am going to the ___.", note:"Đầu là âm /θ/ — lưỡi giữa răng.", mnemonic:"THEA (thần Hy Lạp) + TER = nơi trình diễn cho các vị thần."},
+  {en:"overslept", syl:"o·ver·slept", ipa:"/ˌəʊ·və·ˈslept/", stress:"o-ver-SLEPT", vi:"ngủ quên", ex:"I ___.", note:"3 âm tiết, nhấn SLEPT cuối.", mnemonic:"OVER (quá) + SLEPT (đã ngủ) = ngủ quá giờ."},
+  {en:"miss", syl:"miss", ipa:"/mɪs/", stress:"MISS", vi:"trễ, bỏ lỡ, nhớ", ex:"I ___ed the bus.", note:"Có nhiều nghĩa: trễ / nhớ (someone) / cô (Miss X).", mnemonic:"MISS = 'trượt' — trượt xe buýt là 'miss the bus'."},
+  {en:"parking space", syl:"park·ing · space", ipa:"/ˈpɑː·kɪŋ ˌspeɪs/", stress:"PARK-ing space", vi:"chỗ đậu xe", ex:"I couldn't find a ___.", note:"Nhấn PARK đầu.", mnemonic:"PARKING (đậu xe) + SPACE (chỗ trống)."},
+  {en:"get stuck", syl:"get · stuck", ipa:"/ɡet ˈstʌk/", stress:"get STUCK", vi:"mắc kẹt", ex:"I ___ in traffic.", note:"STUCK là quá khứ của STICK (dính).", mnemonic:"STUCK từ STICK (dính) — dính chặt vào một chỗ."},
+  {en:"traffic", syl:"traf·fic", ipa:"/ˈtræ·fɪk/", stress:"TRAF-fic", vi:"giao thông", ex:"I got stuck in ___.", note:"Nhấn TRAF đầu.", mnemonic:"TRAFFIC quen thuộc — 'traffic jam' = kẹt xe."},
+  {en:"horror", syl:"hor·ror", ipa:"/ˈhɒr·ə/", stress:"HOR-ror", vi:"kinh dị, kinh hãi", ex:"Tom watched in ___.", note:"Nhấn HOR đầu, 'r' cuối lặng (giọng Anh).", mnemonic:"HORROR = 'phim ma' → cảm giác 'hỡ ơ' rùng mình."},
+  {en:"science-fiction", syl:"sci·ence · fic·tion", ipa:"/ˌsaɪ·əns ˈfɪk·ʃn/", stress:"science FIC-tion", vi:"khoa học viễn tưởng", ex:"___ stories often mention robots.", note:"'science' có 2 âm tiết: /saɪ-əns/.", mnemonic:"SCIENCE (khoa học) + FICTION (viễn tưởng) — thường gọi tắt 'sci-fi'."},
+  {en:"comedy", syl:"com·e·dy", ipa:"/ˈkɒm·ə·di/", stress:"COM-e-dy", vi:"hài kịch", ex:"I prefer to watch ___ movies.", note:"3 âm tiết, nhấn COM đầu.", mnemonic:"COMEDY như 'comic' (truyện hài) — thể loại hài."},
+  {en:"documentary", syl:"doc·u·men·ta·ry", ipa:"/ˌdɒk·jə·ˈmen·tə·ri/", stress:"doc-u-MEN-ta-ry", vi:"phim tài liệu", ex:"I watched a ___ on the Civil War.", note:"5 âm tiết, nhấn MEN (thứ ba).", mnemonic:"DOCUMENT (tài liệu) + ARY = 'thuộc tài liệu' → phim tài liệu."},
+  {en:"musical film", syl:"mu·si·cal · film", ipa:"/ˈmjuː·zɪ·kəl ˌfɪlm/", stress:"MU-si-cal film", vi:"phim nhạc kịch", ex:"A ___ has characters who sing.", note:"'musical' nhấn MU đầu.", mnemonic:"MUSIC + AL + FILM = phim có nhạc, hát."},
+  {en:"hilarious", syl:"hi·lar·i·ous", ipa:"/hɪ·ˈleə·ri·əs/", stress:"hi-LAR-i-ous", vi:"cực kỳ hài hước", ex:"I thought it was ___.", note:"4 âm tiết, nhấn LAR (thứ hai).", mnemonic:"HILARIOUS = 'hài chảy nước mắt'. Nhấn LAR như 'lare' (nhòe)."},
+  {en:"silly", syl:"sil·ly", ipa:"/ˈsɪl·i/", stress:"SIL-ly", vi:"ngốc, ngớ ngẩn", ex:"You are so ___.", note:"Nhấn SIL đầu.", mnemonic:"SILLY dễ nhớ — 'silly boy' quen thuộc trong sách trẻ em."},
+  {en:"boring", syl:"bor·ing", ipa:"/ˈbɔː·rɪŋ/", stress:"BOR-ing", vi:"buồn chán", ex:"Her job is so ___.", note:"'or' đọc /ɔː/ dài. Nhấn BOR đầu.", mnemonic:"BORE (chán) + ING → đang chán."},
+  {en:"weird", syl:"weird", ipa:"/wɪəd/", stress:"WEIRD", vi:"kỳ lạ", ex:"He has a ___ hobby.", note:"Đọc /wɪəd/ (1 âm tiết) — KHÔNG /wiːrd/.", mnemonic:"WEIRD viết lạ (ei chứ không ie) — chính vì kỳ lạ nên phá quy tắc chính tả."},
+  {en:"unforgettable", syl:"un·for·get·ta·ble", ipa:"/ˌʌn·fə·ˈɡet·ə·bl/", stress:"un-for-GET-ta-ble", vi:"không thể quên", ex:"Let's make our memories ___.", note:"5 âm tiết, nhấn GET (thứ ba).", mnemonic:"UN (không) + FORGET (quên) + ABLE (có thể) = không thể quên."},
+  {en:"romantic", syl:"ro·man·tic", ipa:"/rəʊ·ˈmæn·tɪk/", stress:"ro-MAN-tic", vi:"lãng mạn", ex:"Have you watched the ___ movie on TV yet?", note:"3 âm tiết, nhấn MAN (giữa).", mnemonic:"ROMEO + MANTIC = tính từ chuyện tình Romeo → lãng mạn."},
+  {en:"thought-provoking", syl:"thought · pro·vok·ing", ipa:"/ˈθɔːt prə·ˌvəʊ·kɪŋ/", stress:"THOUGHT-provoking", vi:"gợi lên suy nghĩ", ex:"This is an entertaining yet ___ film.", note:"Ghép 2 từ, nhấn THOUGHT đầu.", mnemonic:"THOUGHT (suy nghĩ) + PROVOKE (khơi gợi) = khơi gợi suy nghĩ."},
+  {en:"the plot", syl:"plot", ipa:"/ðə ˈplɒt/", stress:"PLOT", vi:"cốt truyện", ex:"The film had an exciting ___.", note:"'plot' 1 âm tiết ngắn, âm /ɒ/.", mnemonic:"PLOT còn có nghĩa 'âm mưu' — cốt truyện là 'kế hoạch' của phim."},
+  {en:"director", syl:"di·rec·tor", ipa:"/dɪ·ˈrek·tə/", stress:"di-REC-tor", vi:"đạo diễn", ex:"She's one of the best young ___s in Hollywood.", note:"3 âm tiết, nhấn REC (giữa).", mnemonic:"DIRECT (chỉ đạo) + OR (người) = người chỉ đạo phim."},
+  {en:"aggressive behavior", syl:"ag·gres·sive · be·hav·ior", ipa:"/ə·ˈɡres·ɪv bɪ·ˈheɪ·vjə/", stress:"ag-GRES-sive be-HAV-ior", vi:"hành vi hung hăng", ex:"Children's ___s have become worse.", note:"'aggressive' nhấn GRES giữa, 'behavior' nhấn HAV giữa.", mnemonic:"AGGRESSIVE = 'hung hăng công kích' + BEHAVIOR (hành vi)."},
+  {en:"convicted of", syl:"con·vict·ed · of", ipa:"/kən·ˈvɪk·tɪd əv/", stress:"con-VICT-ed of", vi:"bị kết tội (làm gì)", ex:"The judges ___ Sunry ___ a serious crime.", note:"'convict' danh từ nhấn CON, động từ nhấn VICT.", mnemonic:"CONVICT (kết án) + ED (bị) + OF (về tội gì)."},
+  {en:"child abuse", syl:"child · a·buse", ipa:"/ˌtʃaɪld ə·ˈbjuːs/", stress:"child a-BUSE", vi:"lạm dụng, ngược đãi trẻ em", ex:"___ is a serious crime.", note:"'abuse' danh từ đọc /əˈbjuːs/ (âm /s/), động từ /əˈbjuːz/.", mnemonic:"CHILD (trẻ) + ABUSE (lạm dụng)."},
+  {en:"attitude", syl:"at·ti·tude", ipa:"/ˈæt·ɪ·tjuːd/", stress:"AT-ti-tude", vi:"thái độ", ex:"It's difficult to change people's ___s.", note:"3 âm tiết, nhấn AT đầu.", mnemonic:"AT-ti-TUDE có 'TUDE' cuối như 'tính' → thái độ (=tính cách)."},
+  {en:"to commit violent acts", syl:"com·mit · vi·o·lent · acts", ipa:"/tə kə·ˈmɪt ˈvaɪ·ə·lənt ˈækts/", stress:"to com-MIT VI-o-lent ACTS", vi:"thực hiện hành vi bạo lực", ex:"They may even begin ___.", note:"'commit' nhấn MIT, 'acts' số nhiều.", mnemonic:"COMMIT (thực hiện) + VIOLENT ACTS (hành vi bạo lực)."},
+  {en:"face consequences", syl:"face · con·se·quenc·es", ipa:"/feɪs ˈkɒn·sɪ·kwən·sɪz/", stress:"face CON-se-quen-ces", vi:"đối diện hệ quả", ex:"They don't ___ or punishment.", note:"'consequences' 4 âm tiết, nhấn CON đầu.", mnemonic:"FACE (đối mặt) + CONSEQUENCES (hệ quả)."},
+  {en:"exposure to violence", syl:"ex·po·sure · to · vi·o·lence", ipa:"/ɪk·ˈspəʊ·ʒə tə ˈvaɪ·ə·ləns/", stress:"ex-PO-sure to VI-o-lence", vi:"sự tiếp xúc với bạo lực", ex:"We can prevent their ___.", note:"'exposure' nhấn PO giữa; 'violence' nhấn VI đầu.", mnemonic:"EXPOSE (phơi ra) + URE + VIOLENCE = 'bị phơi ra trước bạo lực'."},
+  {en:"murder", syl:"mur·der", ipa:"/ˈmɜː·də/", stress:"MUR-der", vi:"tội giết người", ex:"One kind of crime is ___.", note:"Âm /ɜː/ dài như trong 'her'.", mnemonic:"MURDER — âm 'mờ-đờ' rùng rợn. Nhớ 'Murder She Wrote'."},
+  {en:"crime", syl:"crime", ipa:"/kraɪm/", stress:"CRIME", vi:"tội phạm, tội ác", ex:"One kind of ___ is murder.", note:"1 âm tiết, âm /aɪ/ dài.", mnemonic:"CRIME quen thuộc — 'Crime scene' (hiện trường)."}
+    ]
+  }
+};
+let currentUnitKey = "unit1";
+let DEFAULT_WORDS = UNITS[currentUnitKey].words;
 let WORDS = DEFAULT_WORDS.slice();
 
 const CITIES = ["Xuất phát","Tokyo","Hà Nội","Seoul","Paris","London","Cairo","Delhi","Bangkok","Roma","Madrid","Berlin","Osaka","Huế","Sydney","Oslo","Lima","Cebu","Accra","Dubai","Boston","Kyoto","Zurich","Đà Nẵng"];
@@ -804,7 +923,100 @@ $("#btnSaveWords").addEventListener("click",()=>{
   renderLab(); newMatch();
   alert("Đã cập nhật " + WORDS.length + " từ.");
 });
-$("#btnResetWords").addEventListener("click",()=>{ WORDS = DEFAULT_WORDS.slice(); li=0; fillEditor(); renderLab(); newMatch(); });
+$("#btnResetWords").addEventListener("click",()=>{ stopAutoplay(); WORDS = DEFAULT_WORDS.slice(); li=0; fillEditor(); renderLab(); newMatch(); });
+
+/* -------- Chuyển Unit -------- */
+function switchUnit(key){
+  if(!UNITS[key]) return;
+  stopAutoplay();
+  currentUnitKey = key;
+  DEFAULT_WORDS = UNITS[key].words;
+  WORDS = DEFAULT_WORDS.slice();
+  li = 0;
+  for(const k of Object.keys(best)) delete best[k];
+  if(typeof G !== "undefined" && G) G.deck = [];
+  if(typeof RC !== "undefined" && RC) RC.queue = [];
+  const u = UNITS[key];
+  $("#unitSubtitle").textContent = `Top Notch 2 — ${u.title} (${WORDS.length} từ, có phát âm chuẩn IPA + mẹo nhớ)`;
+  fillEditor();
+  renderLab();
+  newMatch();
+}
+$("#unitSelect").addEventListener("change", e => switchUnit(e.target.value));
+
+/* -------- Auto-play: nghe lặp lại nhiều lần, nhép theo, tự chuyển từ -------- */
+function speakAsync(text, rate){
+  return new Promise(resolve => {
+    if(!window.speechSynthesis){ resolve(); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US"; u.rate = rate || 1; if(enVoice) u.voice = enVoice;
+    let done = false;
+    const finish = () => { if(done) return; done = true; resolve(); };
+    u.onend = finish; u.onerror = finish;
+    speechSynthesis.speak(u);
+    setTimeout(finish, 12000);
+  });
+}
+const AP = { on:false, gen:0 };
+function sleep(ms, gen){
+  return new Promise(res => {
+    const t = setInterval(() => {
+      if(!AP.on || AP.gen !== gen){ clearInterval(t); res(); }
+    }, 80);
+    setTimeout(() => { clearInterval(t); res(); }, ms);
+  });
+}
+async function runAutoplay(){
+  if(AP.on){ stopAutoplay(); return; }
+  AP.on = true;
+  AP.gen++;
+  const myGen = AP.gen;
+  const btn = $("#btnAutoPlay");
+  btn.textContent = "⏹ Dừng tự học";
+  btn.classList.add("playing");
+  while(AP.on && AP.gen === myGen){
+    const repeat = Math.max(1, Math.min(10, parseInt($("#apRepeat").value) || 3));
+    const rate = parseFloat($("#apRate").value) || 0.9;
+    const gap = parseInt($("#apGap").value) || 900;
+    const withEx = $("#apEx").checked;
+    const w = WORDS[li];
+    if(!w) break;
+    for(let r = 1; r <= repeat; r++){
+      if(!AP.on || AP.gen !== myGen) break;
+      $("#apStatus").textContent = `Từ ${li+1}/${WORDS.length}: "${w.en}" — lần ${r}/${repeat} (nhép theo)`;
+      await speakAsync(w.en, rate);
+      if(!AP.on || AP.gen !== myGen) break;
+      await sleep(gap, myGen);
+    }
+    if(withEx && AP.on && AP.gen === myGen){
+      const sentence = (w.ex || "").replace("___", w.en);
+      $("#apStatus").textContent = `Câu ví dụ: ${sentence}`;
+      await speakAsync(sentence, rate);
+      if(!AP.on || AP.gen !== myGen) break;
+      await sleep(gap, myGen);
+    }
+    if(!AP.on || AP.gen !== myGen) break;
+    li = (li + 1) % WORDS.length;
+    renderLab();
+    if(li === 0) $("#apStatus").textContent = "🔁 Hết Unit — quay lại từ đầu.";
+  }
+  const finalGen = myGen;
+  if(AP.gen === finalGen) stopAutoplay();
+}
+function stopAutoplay(){
+  AP.on = false;
+  AP.gen++;
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  const btn = $("#btnAutoPlay");
+  if(btn){ btn.textContent = "▶ Bắt đầu tự học"; btn.classList.remove("playing"); }
+  const s = $("#apStatus");
+  if(s) s.textContent = 'Đã dừng. Bấm "Bắt đầu tự học" để tiếp tục.';
+}
+$("#btnAutoPlay").addEventListener("click", runAutoplay);
+$("#btnPrev").addEventListener("click", stopAutoplay);
+$("#btnNext").addEventListener("click", stopAutoplay);
+
 $("#btnCopyWords").addEventListener("click",async()=>{
   try{ await navigator.clipboard.writeText($("#editArea").value); alert("Đã sao chép. Dán vào biến DEFAULT_WORDS trong index.html để lớp không cần tạo lại."); }
   catch(e){ $("#editArea").select(); alert("Trình duyệt chặn sao chép tự động. Văn bản đã được bôi đen, bấm Ctrl+C."); }
