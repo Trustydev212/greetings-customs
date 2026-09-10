@@ -97,9 +97,14 @@ nav.tabs{display:flex;gap:8px;flex-wrap:wrap}
 .card{padding:28px 28px 24px;text-align:center;overflow:hidden}
 .card .idx{font-size:13px;color:rgba(18,32,54,.55);font-weight:600}
 .word{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(44px,9vw,86px);line-height:1;margin:6px 0 4px}
-.ipa{font-size:clamp(18px,3vw,26px);color:var(--red);font-weight:600}
+.ipa{font-size:clamp(18px,3vw,26px);color:var(--red);font-weight:600;letter-spacing:.02em}
+.syl{font-size:clamp(15px,2.2vw,19px);color:rgba(18,32,54,.62);font-weight:600;margin-top:4px;letter-spacing:.04em}
+.stress{display:inline-block;margin-top:6px;font-size:clamp(14px,2vw,17px);color:var(--teal);font-weight:700;letter-spacing:.06em}
+.stress::before{content:"Nhấn: ";color:rgba(18,32,54,.55);font-weight:600;letter-spacing:0}
 .mean{font-size:clamp(19px,3vw,25px);margin-top:10px;font-weight:600}
 .note{display:inline-block;margin-top:8px;font-size:14px;background:rgba(224,168,46,.28);border-radius:8px;padding:4px 10px}
+.mnemonic{display:inline-block;margin-top:8px;margin-left:6px;font-size:14px;background:rgba(27,122,98,.16);border-radius:8px;padding:4px 10px;color:var(--teal);font-weight:600}
+.mnemonic::before{content:"💡 Mẹo: ";color:var(--teal);font-weight:700}
 .ex{margin:16px auto 0;max-width:52ch;font-size:17px;color:rgba(18,32,54,.8);border-top:1.5px dashed rgba(18,32,54,.25);padding-top:14px}
 .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 
@@ -347,7 +352,7 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
     <div class="seal" aria-hidden="true">☺</div>
     <div>
       <h1>Greetings &amp; Customs</h1>
-      <p>Chào hỏi vòng quanh thế giới — 35 từ, 3 hoạt động</p>
+      <p>Top Notch 2 — Unit 1: Getting Acquainted (32 từ, có phát âm chuẩn IPA + mẹo nhớ)</p>
     </div>
   </div>
   <nav class="tabs" role="tablist" aria-label="Chọn hoạt động">
@@ -366,9 +371,14 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
       <div class="stamp" id="labStamp">ĐẠT</div>
       <div class="idx" id="labIdx">Từ 1 / 10</div>
       <div class="word" id="labWord">bow</div>
+      <div class="syl" id="labSyl" hidden></div>
       <div class="ipa" id="labIpa">/baʊ/</div>
+      <div class="stress" id="labStress" hidden></div>
       <div class="mean" id="labMean">cúi chào</div>
-      <div class="note" id="labNote" hidden></div>
+      <div>
+        <span class="note" id="labNote" hidden></span>
+        <span class="mnemonic" id="labMnemonic" hidden></span>
+      </div>
       <p class="ex" id="labEx"></p>
 
       <div class="row">
@@ -411,7 +421,7 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
           <option value="anthropic|claude-haiku-4-5-20251001">Claude Haiku 4.5 — rẻ và nhanh</option>
         </select>
       </div>
-      <textarea id="rawWords" class="short" spellcheck="false" placeholder="bow&#10;people&#10;customs&#10;formal"></textarea>
+      <textarea id="rawWords" class="short" spellcheck="false" placeholder="bow&#10;greeting&#10;custom&#10;formal"></textarea>
       <div class="row" style="justify-content:flex-start;margin-top:10px">
         <button class="btn teal small" id="btnGen">Sinh phiên âm, nghĩa và ví dụ</button>
         <span class="status" id="genStatus"></span>
@@ -576,42 +586,40 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
 "use strict";
 
 /* ---------------- Dữ liệu ---------------- */
+/* Đơn vị 1 — Getting Acquainted (30 từ, khớp giáo trình Top Notch 2 ENT203) */
 const DEFAULT_WORDS = [
-  {en:"bow", ipa:"/baʊ/", vi:"cúi chào", ex:"In Japan, people ___ to greet each other.", note:"Đọc /boʊ/ khi nghĩa là cái nơ hoặc cánh cung."},
-  {en:"people", ipa:"/ˈpiːpl/", vi:"con người, người ta, dân tộc", ex:"___ in different countries say hello in different ways.", note:""},
-  {en:"customs", ipa:"/ˈkʌstəmz/", vi:"phong tục, tập quán (hoặc: hải quan)", ex:"Every country has its own ___ and traditions.", note:""},
-  {en:"formal", ipa:"/ˈfɔːml/", vi:"trang trọng, chính thức", ex:"“Good morning, sir” is a ___ greeting.", note:""},
-  {en:"informal", ipa:"/ɪnˈfɔːml/", vi:"thân mật, không trang trọng", ex:"“Hi, what's up?” is an ___ greeting.", note:"Trọng âm rơi vào âm tiết thứ hai."},
-  {en:"speaker", ipa:"/ˈspiːkə/", vi:"diễn giả, người nói (hoặc: loa)", ex:"The ___ talked about Vietnamese culture.", note:""},
-  {en:"greetings", ipa:"/ˈɡriːtɪŋz/", vi:"lời chào hỏi", ex:"___ are the first step in a conversation.", note:"Nhớ bật âm /z/ ở cuối."},
-  {en:"polite", ipa:"/pəˈlaɪt/", vi:"lịch sự, lễ phép", ex:"It is ___ to smile when you meet someone.", note:""},
-  {en:"familiar", ipa:"/fəˈmɪliə/", vi:"quen thuộc, gần gũi", ex:"Her face looks ___ to me.", note:"Trọng âm ở âm tiết thứ hai: fa-MI-liar."},
-  {en:"conference", ipa:"/ˈkɒnfərəns/", vi:"hội nghị, hội thảo", ex:"There will be an international ___ next week.", note:""},
-  {en:"shake hands", ipa:"/ˌʃeɪk ˈhændz/", vi:"bắt tay", ex:"They ___ when they meet.", note:"Danh từ số nhiều 'hands' vì bắt bằng hai bàn tay."},
-  {en:"hug", ipa:"/hʌɡ/", vi:"ôm, cái ôm", ex:"They ___ each other warmly.", note:""},
-  {en:"pocket", ipa:"/ˈpɒkɪt/", vi:"cái túi (quần, áo)", ex:"I put one hand in my ___.", note:""},
-  {en:"get acquainted", ipa:"/ˌɡet əˈkweɪntɪd/", vi:"làm quen với ai đó", ex:"The meetings were a way to ___ with each other.", note:"'acquainted' đọc gần như /ə-KWEIN-tid/."},
-  {en:"appropriate", ipa:"/əˈprəʊpriət/", vi:"thích hợp, phù hợp", ex:"Is this film ___ for small children?", note:"Khi là tính từ đọc /-ət/; khi là động từ đọc /-eɪt/."},
-  {en:"exchange", ipa:"/ɪksˈtʃeɪndʒ/", vi:"trao đổi", ex:"We ___ greetings before the meeting.", note:""},
-  {en:"topic", ipa:"/ˈtɒpɪk/", vi:"chủ đề", ex:"People think these ___s are appropriate.", note:""},
-  {en:"keep in touch", ipa:"/ˌkiːp ɪn ˈtʌtʃ/", vi:"giữ liên lạc", ex:"We should ___.", note:"'touch' đọc /tʌtʃ/, không phải /toʊtʃ/."},
-  {en:"airport", ipa:"/ˈeəpɔːt/", vi:"sân bay", ex:"We need to go to the ___ now.", note:""},
-  {en:"around", ipa:"/əˈraʊnd/", vi:"xung quanh, dẫn đi xem", ex:"I could show you ___.", note:""},
-  {en:"visitor", ipa:"/ˈvɪzɪtə/", vi:"khách, người đến thăm", ex:"You have some ___s to see you.", note:""},
-  {en:"climb", ipa:"/klaɪm/", vi:"leo, trèo", ex:"He ___s to the top of the mountain.", note:"Chữ 'b' cuối câm — không đọc."},
-  {en:"go sightseeing", ipa:"/ɡəʊ ˈsaɪtsiːɪŋ/", vi:"đi ngắm cảnh, tham quan", ex:"They ___ and drink beer.", note:""},
-  {en:"fantastic", ipa:"/fænˈtæstɪk/", vi:"tuyệt vời", ex:"It was ___.", note:"Trọng âm ở âm tiết giữa: fan-TAS-tic."},
-  {en:"take pictures", ipa:"/ˌteɪk ˈpɪktʃəz/", vi:"chụp hình", ex:"I want to ___.", note:""},
-  {en:"gesture", ipa:"/ˈdʒestʃə/", vi:"cử chỉ", ex:"She makes a rude ___ at the other driver.", note:"Bắt đầu bằng âm /dʒ/ như trong 'jelly'."},
-  {en:"lead to", ipa:"/ˌliːd ˈtuː/", vi:"dẫn đến (kết quả)", ex:"Hand gestures can ___ misunderstanding.", note:"'lead' đọc /liːd/; quá khứ 'led' đọc /led/."},
-  {en:"cause", ipa:"/kɔːz/", vi:"gây ra, nguyên nhân", ex:"Gestures can ___ confusion.", note:""},
-  {en:"non-verbal communication", ipa:"/ˌnɒn ˈvɜːbl kəˌmjuːnɪˈkeɪʃn/", vi:"giao tiếp phi ngôn ngữ", ex:"You will focus on ___.", note:""},
-  {en:"prefer", ipa:"/prɪˈfɜː/", vi:"thích hơn", ex:"I ___ ice-cream to milk tea.", note:"Cấu trúc: prefer A to B."},
-  {en:"culture", ipa:"/ˈkʌltʃə/", vi:"văn hóa", ex:"I love the ___ of Vietnam.", note:""},
-  {en:"fascinating", ipa:"/ˈfæsɪneɪtɪŋ/", vi:"lôi cuốn, hấp dẫn", ex:"The safari was ___.", note:"Chữ 'c' thứ hai câm; đọc /ˈfæ-sɪ-neɪ-tɪŋ/."},
-  {en:"thrilling", ipa:"/ˈθrɪlɪŋ/", vi:"hồi hộp, rùng mình (theo nghĩa tích cực)", ex:"The trip was ___.", note:"Bắt đầu bằng âm /θ/ — đặt lưỡi giữa hai hàm răng."},
-  {en:"frightening", ipa:"/ˈfraɪtnɪŋ/", vi:"đáng sợ, kinh khủng", ex:"The trip was ___.", note:""},
-  {en:"disgusting", ipa:"/dɪsˈɡʌstɪŋ/", vi:"kinh tởm, ghê tởm", ex:"The food was ___.", note:""}
+  {en:"greeting", syl:"greet·ing", ipa:"/ˈɡriː·tɪŋ/", stress:"GREET-ing", vi:"lời chào hỏi", ex:"He nodded his head in ___.", note:"Đọc /ˈɡriː-tɪŋ/, âm /iː/ dài.", mnemonic:"'greet' + 'ing' — như 'greeting card' quen thuộc, nhấn GREET đầu."},
+  {en:"bow", syl:"bow", ipa:"/baʊ/", stress:"BOW", vi:"cúi chào", ex:"Some people ___.", note:"Đọc /boʊ/ khi nghĩa là cái nơ hoặc cánh cung.", mnemonic:"BOW như âm 'bàu' — 1 âm tiết, gập người xuống."},
+  {en:"shake hands", syl:"shake · hands", ipa:"/ˌʃeɪk ˈhændz/", stress:"shake HANDS", vi:"bắt tay", ex:"They ___ when they meet.", note:"'hands' số nhiều vì bắt bằng hai bàn tay.", mnemonic:"Ghép 2 từ đơn — nhấn HANDS mạnh hơn, tưởng tượng 2 bàn tay lắc."},
+  {en:"formal", syl:"for·mal", ipa:"/ˈfɔː·ml̩/", stress:"FOR-mal", vi:"trang trọng, chính thức", ex:"They want to make a ___ handshake.", note:"Âm 'l' cuối là 'l thành âm tiết' — đọc như /ml̩/.", mnemonic:"FORM (mẫu) + AL — 'theo mẫu' thì trang trọng, nhấn FOR đầu."},
+  {en:"informal", syl:"in·for·mal", ipa:"/ɪn·ˈfɔː·ml̩/", stress:"in-FOR-mal", vi:"thân mật, không trang trọng", ex:"They want to make an ___ handshake.", note:"Tiền tố 'in-' đảo ngược nghĩa, nhưng trọng âm vẫn ở FOR.", mnemonic:"IN + FORMAL = 'không formal'. Trọng âm nhảy từ FOR-mal → in-FOR-mal (giữa)."},
+  {en:"hug", syl:"hug", ipa:"/hʌɡ/", stress:"HUG", vi:"ôm, cái ôm", ex:"They ___ each other.", note:"Âm /ʌ/ ngắn như 'ắc' trong tiếng Việt.", mnemonic:"HUG = 'hắc' ngắn gọn — nhớ 'free hugs' trên áo phông."},
+  {en:"custom", syl:"cus·tom", ipa:"/ˈkʌs·təm/", stress:"CUS-tom", vi:"phong tục, tập quán", ex:"It's the ___ to get married in white dress.", note:"Số nhiều 'customs' còn có nghĩa 'hải quan'.", mnemonic:"CUS-tom → 'cắs-tơm'. Custom = phong tục 'cứng' truyền qua nhiều đời."},
+  {en:"pocket", syl:"pock·et", ipa:"/ˈpɒk·ɪt/", stress:"POC-ket", vi:"túi (quần, áo)", ex:"I put one hand in a ___.", note:"'o' đọc /ɒ/ như trong 'hot' (giọng Anh).", mnemonic:"POC-ket → 'PÓC-kịt'. Nhớ 'pocket money' - tiền bỏ túi."},
+  {en:"get acquainted", syl:"get · ac·quaint·ed", ipa:"/ˌɡet ə·ˈkweɪn·tɪd/", stress:"get ac-QUAINT-ed", vi:"làm quen với ai đó", ex:"The meetings were a way to ___ with each other.", note:"'acquainted' - chữ 'ac' đọc /ə/ nhẹ, nhấn QUAINT.", mnemonic:"'acquainted' nghe như 'quá quen' (tiếng Việt) — quen là quen."},
+  {en:"appropriate", syl:"ap·pro·pri·ate", ipa:"/ə·ˈprəʊ·pri·ət/", stress:"ap-PRO-pri-ate", vi:"thích hợp, phù hợp", ex:"Is this film ___ for small children?", note:"Tính từ đọc /-ət/; động từ đọc /-eɪt/.", mnemonic:"Có 'PRO' bên trong = 'chuyên nghiệp' → nhấn PRO, phù hợp đâu ra đó."},
+  {en:"exchange", syl:"ex·change", ipa:"/ɪks·ˈtʃeɪndʒ/", stress:"ex-CHANGE", vi:"trao đổi", ex:"We ___ greetings before the meeting.", note:"'ex' đọc /ɪks/, không phải /eks/.", mnemonic:"EX (ngoài) + CHANGE (đổi) = đổi qua đổi lại. Nhấn CHANGE."},
+  {en:"topic", syl:"top·ic", ipa:"/ˈtɒp·ɪk/", stress:"TOP-ic", vi:"chủ đề", ex:"People think these ___s are appropriate.", note:"Đơn giản: TOP + IC.", mnemonic:"TOP đứng đầu → chủ đề là thứ đứng đầu bài nói."},
+  {en:"familiar", syl:"fa·mil·iar", ipa:"/fə·ˈmɪl·i·ə/", stress:"fa-MIL-iar", vi:"quen thuộc, gần gũi", ex:"You look ___.", note:"Cùng gốc với 'family' — người trong gia đình là quen.", mnemonic:"Nghe như 'phở MÌ liu' — món ăn quen thuộc. Cùng gốc 'FAMILY'."},
+  {en:"keep in touch", syl:"keep · in · touch", ipa:"/ˌkiːp ɪn ˈtʌtʃ/", stress:"keep in TOUCH", vi:"giữ liên lạc", ex:"We should ___.", note:"'touch' đọc /tʌtʃ/, không phải /toʊtʃ/.", mnemonic:"Hình ảnh: giữ 'chạm tay' → giữ kết nối. Nhấn TOUCH cuối."},
+  {en:"the conference", syl:"con·fer·ence", ipa:"/ˈkɒn·fə·rəns/", stress:"CON-fer-ence", vi:"hội nghị, hội thảo", ex:"I will go to ___ next week.", note:"3 âm tiết, nhấn CON đầu.", mnemonic:"CON-fer-ence → 'CON-phơ-rừns'. CONfer = bàn bạc, nơi bàn bạc = hội nghị."},
+  {en:"airport", syl:"air·port", ipa:"/ˈeə·pɔːt/", stress:"AIR-port", vi:"sân bay", ex:"We need to go to the ___ now.", note:"'air' đọc /eə/ (giọng Anh) — không phải /er/.", mnemonic:"AIR (không khí) + PORT (bến) = bến của máy bay."},
+  {en:"around", syl:"a·round", ipa:"/ə·ˈraʊnd/", stress:"a-ROUND", vi:"xung quanh, dẫn đi xem", ex:"I could show you ___.", note:"'a' đọc /ə/ rất nhẹ, nhấn ROUND.", mnemonic:"'a' + ROUND (vòng tròn) = đi vòng vòng, xung quanh."},
+  {en:"visitor", syl:"vis·i·tor", ipa:"/ˈvɪz·ɪ·tə/", stress:"VIS-i-tor", vi:"khách, người đến thăm", ex:"You have some ___s to see you.", note:"3 âm tiết, nhấn VIS đầu.", mnemonic:"VISIT + OR = người thực hiện việc 'visit'."},
+  {en:"climb", syl:"climb", ipa:"/klaɪm/", stress:"CLIMB", vi:"leo, trèo", ex:"He ___s to the top of the mountain.", note:"Chữ 'b' cuối câm — không phát âm.", mnemonic:"CLIMB → đọc như 'clai(m)'. Chữ 'b' câm giống như 'thumb', 'lamb'."},
+  {en:"go sightseeing", syl:"go · sight·see·ing", ipa:"/ɡəʊ ˈsaɪt·siː·ɪŋ/", stress:"go SIGHT-seeing", vi:"đi ngắm cảnh, tham quan", ex:"They ___ and drink beer.", note:"'sightseeing' = 3 âm tiết ghép, nhấn SIGHT đầu.", mnemonic:"SIGHT (tầm nhìn) + SEEING (đang xem) = đang xem cảnh."},
+  {en:"fantastic", syl:"fan·tas·tic", ipa:"/fæn·ˈtæs·tɪk/", stress:"fan-TAS-tic", vi:"tuyệt vời", ex:"It was ___.", note:"3 âm tiết, nhấn TAS (giữa).", mnemonic:"FAN (hâm mộ) → thấy TAS-tic là thốt lên 'quá đã'."},
+  {en:"take pictures", syl:"take · pic·tures", ipa:"/ˌteɪk ˈpɪk·tʃəz/", stress:"take PIC-tures", vi:"chụp hình", ex:"I want to ___.", note:"'pictures' số nhiều, có âm /z/ cuối.", mnemonic:"TAKE (lấy) + PICtures (hình) = 'lấy hình'. Nhấn PIC."},
+  {en:"gesture", syl:"ges·ture", ipa:"/ˈdʒes·tʃə/", stress:"GES-ture", vi:"cử chỉ", ex:"She makes a rude ___ at the other driver.", note:"Bắt đầu bằng âm /dʒ/ như 'jelly', không phải /g/.", mnemonic:"GES-ture → 'GẸS-chờ'. Nhớ 'gesture' có 'ture' như 'nature' (thiên nhiên)."},
+  {en:"lead to", syl:"lead · to", ipa:"/ˌliːd ˈtuː/", stress:"lead TO", vi:"dẫn đến (kết quả)", ex:"Hand gestures ___ misunderstanding.", note:"'lead' đọc /liːd/; quá khứ 'led' đọc /led/.", mnemonic:"LEAD (dẫn dắt) + TO (đến) = dẫn đến."},
+  {en:"cause", syl:"cause", ipa:"/kɔːz/", stress:"CAUSE", vi:"gây ra, nguyên nhân", ex:"Gestures can ___ confusion.", note:"Đọc /kɔːz/ — cuối có âm /z/, không phải /s/.", mnemonic:"CAUSE nghe như 'khọs' — nhớ 'because' bên trong có 'cause'."},
+  {en:"non-verbal communication", syl:"non · ver·bal · com·mu·ni·ca·tion", ipa:"/ˌnɒn ˈvɜː·bl̩ kə·ˌmjuː·nɪ·ˈkeɪ·ʃn/", stress:"non-VER-bal com-mu-ni-CA-tion", vi:"giao tiếp phi ngôn ngữ", ex:"You will focus on ___.", note:"Cụm 3 chữ dài — có 2 trọng âm chính: VER và CA.", mnemonic:"NON (không) + VERBAL (bằng lời) + COMMUNICATION = giao tiếp không lời."},
+  {en:"prefer", syl:"pre·fer", ipa:"/prɪ·ˈfɜː/", stress:"pre-FER", vi:"thích hơn", ex:"I ___ ice-cream to milk tea.", note:"Cấu trúc: prefer A to B (thích A hơn B).", mnemonic:"pre-FER → nhấn FER (như 'fur' bộ lông mèo). Nhớ 'I prefer' = 'tôi chọn'."},
+  {en:"culture", syl:"cul·ture", ipa:"/ˈkʌl·tʃə/", stress:"CUL-ture", vi:"văn hóa", ex:"I love the ___ of Vietnam.", note:"'ture' cuối đọc /tʃə/ giống 'nature', 'picture'.", mnemonic:"CUL-ture → 'KẢL-chờ'. CULT bên trong = tín ngưỡng, gốc rễ văn hóa."},
+  {en:"fascinating", syl:"fas·ci·nat·ing", ipa:"/ˈfæ·sɪ·neɪ·tɪŋ/", stress:"FAS-ci-nat-ing", vi:"lôi cuốn, hấp dẫn", ex:"The safari was ___.", note:"Chữ 'c' giữa CÂM: đọc 'fas-i' không 'fas-ci'.", mnemonic:"FAS đầu như 'fast' → mê nhanh như chớp. Bỏ chữ 'c' câm."},
+  {en:"thrilling", syl:"thrill·ing", ipa:"/ˈθrɪl·ɪŋ/", stress:"THRILL-ing", vi:"hồi hộp, rùng mình (tích cực)", ex:"The trip was ___.", note:"Bắt đầu bằng âm /θ/ — đặt lưỡi giữa hai hàm răng.", mnemonic:"THRILL (cảm giác mạnh) + ING → nhớ 'thriller' của Michael Jackson."},
+  {en:"frightening", syl:"fright·en·ing", ipa:"/ˈfraɪt·n·ɪŋ/", stress:"FRIGHT-en-ing", vi:"đáng sợ, kinh khủng", ex:"The trip was ___.", note:"'gh' câm, chỉ đọc /fraɪt/. 'en' đọc /n̩/ rất nhẹ.", mnemonic:"FRIGHT = sợ hãi (như 'stage fright'). Ing = đang → đang gây sợ."},
+  {en:"disgusting", syl:"dis·gust·ing", ipa:"/dɪs·ˈɡʌs·tɪŋ/", stress:"dis-GUS-ting", vi:"kinh tởm, ghê tởm", ex:"The food was ___.", note:"Nhấn GUS giữa, âm /ʌ/ ngắn.", mnemonic:"DIS (phủ định) + GUST (cơn) → cơn ghê tởm ập tới. Nhấn GUS."}
 ];
 let WORDS = DEFAULT_WORDS.slice();
 
@@ -717,10 +725,16 @@ function renderLab(){
   const w = WORDS[li];
   $("#labIdx").textContent = `Từ ${li+1} / ${WORDS.length}`;
   $("#labWord").textContent = w.en;
+  const sylEl = $("#labSyl");
+  if(w.syl){ sylEl.hidden=false; sylEl.textContent = w.syl; } else sylEl.hidden = true;
   $("#labIpa").textContent = w.ipa || "";
+  const strEl = $("#labStress");
+  if(w.stress){ strEl.hidden=false; strEl.textContent = w.stress; } else strEl.hidden = true;
   $("#labMean").textContent = w.vi;
   const n = $("#labNote");
   if(w.note){ n.hidden=false; n.textContent = w.note; } else n.hidden = true;
+  const mn = $("#labMnemonic");
+  if(w.mnemonic){ mn.hidden=false; mn.textContent = w.mnemonic; } else mn.hidden = true;
   $("#labEx").textContent = (w.ex||"").replace("___", w.en);
   $("#labBar").style.width = ((best[w.en]||0)*100)+"%";
   $("#labScore").textContent = best[w.en] ? `Điểm cao nhất: ${Math.round(best[w.en]*100)}%` : "Bấm “Nói lại”, đọc to từ trên màn hình.";
