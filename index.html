@@ -3141,10 +3141,14 @@ function revealAnswer(){
   const typeMode = $("#rcTypeMode").checked;
   if(typeMode && $("#rcInput").value){
     const correct = norm($("#rcInput").value) === norm(w.en);
-    $("#rcMsg").textContent = correct ? "Gõ đúng — bạn tự chấm từ Tốt trở lên." : `Gõ chưa đúng (bạn viết: "${$("#rcInput").value}"). Cân nhắc Quên/Khó.`;
+    $("#rcMsg").textContent = correct ? "Gõ đúng — bấm 1-4 (hoặc click) để tự chấm." : `Gõ chưa đúng (bạn viết: "${$("#rcInput").value}"). Bấm 1-4 để chấm.`;
   } else {
-    $("#rcMsg").textContent = "Tự chấm mức nhớ. Nghiên cứu cho thấy tự đánh giá càng chính xác → SRS càng tối ưu.";
+    $("#rcMsg").textContent = "Tự chấm mức nhớ: phím 1=Quên, 2=Khó, 3=Tốt, 4=Dễ.";
   }
+  // Blur input để phím tắt 1-4 chấm điểm hoạt động
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  const goodBtn = document.querySelector('#rcRowGrades .srs-btn[data-q="4"]');
+  if(goodBtn) setTimeout(() => goodBtn.focus(), 30);
 }
 function gradeCard(quality){
   const w = RC.cur; if(!w || !RC.revealed) return;
@@ -3324,11 +3328,18 @@ function markCheck(correct, msg){
   stamp.className = "stamp" + (correct ? "" : " miss");
   stamp.textContent = correct ? "ĐÚNG" : "SAI";
   void stamp.offsetWidth; stamp.classList.add("show");
-  $("#wrMsg").textContent = msg || (correct ? "Đúng rồi. Tự chấm để cập nhật SRS." : "Chưa đúng. Xem đáp án rồi tự chấm.");
+  $("#wrMsg").textContent = msg || (correct ? "Đúng rồi. Tự chấm để cập nhật SRS (1=Quên, 2=Khó, 3=Tốt, 4=Dễ)." : "Chưa đúng. Xem đáp án rồi tự chấm (1=Quên, 2=Khó, 3=Tốt, 4=Dễ).");
   showWriteReveal();
   showWriteGrades();
   $("#wrProgress").textContent = `Từ ${WR.idx+1}/${WR.queue.length} · Đúng ${WR.sessionCorrect}/${WR.sessionCount}`;
   if(correct) speak(WR.cur.en, 1);
+  // Blur bất kỳ input nào để phím tắt 1-4 chấm điểm hoạt động
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  // Disable input để tránh gõ tiếp sau khi đã check
+  ["#wrFillInput","#wrTransInput","#wrDictInput","#wrSentInput"].forEach(id => { const el = $(id); if(el) el.disabled = true; });
+  // Auto-focus vào nút Tốt để có thể Enter chấm mặc định Q=4
+  const goodBtn = document.querySelector('#wrGrades .srs-btn[data-q="4"]');
+  if(goodBtn) setTimeout(() => goodBtn.focus(), 30);
 }
 function wrGradeCard(quality){
   const w = WR.cur; if(!w || !WR.checked) return;
