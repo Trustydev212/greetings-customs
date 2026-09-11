@@ -382,6 +382,28 @@ textarea.short{min-height:110px}
 .vrow:hover{background:rgba(18,32,54,.06)}
 .vrow.head{font-weight:800;border-bottom:2px solid rgba(18,32,54,.3)}
 .vrow .vi{color:rgba(18,32,54,.7)}
+/* ---------- SRS Dashboard ---------- */
+.srs-dashboard{padding:14px 18px;margin-bottom:14px}
+.srs-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.srs-stats .stat{text-align:center;padding:8px 6px;background:rgba(18,32,54,.05);border-radius:10px}
+.srs-stats .stat b{display:block;font-size:22px;font-weight:800;color:var(--navy)}
+.srs-stats .stat span{display:block;font-size:11.5px;color:rgba(18,32,54,.7);margin-top:2px;text-transform:uppercase;letter-spacing:.03em}
+[data-theme="dark"] .srs-stats .stat b{color:var(--paper)}
+.srs-mode-row{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;padding-top:12px;border-top:1.5px dashed rgba(18,32,54,.15);font-size:13.5px}
+.srs-mode-row .chk{display:inline-flex;align-items:center;gap:6px;color:var(--ink);cursor:pointer}
+
+/* ---------- SRS Grade Buttons ---------- */
+.srs-grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.srs-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px;position:relative}
+.srs-btn span{font-weight:800;font-size:15px}
+.srs-btn small{font-size:12px;opacity:.85;font-weight:600}
+.srs-btn kbd{position:absolute;top:4px;right:6px;font-size:10px;background:rgba(0,0,0,.25);border-radius:4px;padding:1px 4px;font-family:monospace}
+@media (max-width:480px){
+  .srs-grades{grid-template-columns:repeat(2,1fr)}
+  .srs-btn span{font-size:14px}
+  .srs-btn small{font-size:11px}
+}
+
 /* ---------- Theme toggle button ---------- */
 .theme-toggle{
   width:42px;height:42px;border-radius:50%;
@@ -614,28 +636,56 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
 
 <!-- ============ 3. NHỚ LẠI ============ -->
 <section class="panel" id="p-recall" role="tabpanel" aria-labelledby="tab-recall">
-  <div class="paper card">
+  <div class="paper srs-dashboard">
+    <div class="srs-stats">
+      <div class="stat"><b id="rcDue">0</b><span>đến hẹn hôm nay</span></div>
+      <div class="stat"><b id="rcNew">0</b><span>chưa học</span></div>
+      <div class="stat"><b id="rcMature">0</b><span>đã thuộc (≥21d)</span></div>
+      <div class="stat"><b id="rcStreak">0🔥</b><span>chuỗi ngày</span></div>
+      <div class="stat"><b id="rcRetention">—</b><span>retention</span></div>
+    </div>
+    <div class="srs-mode-row">
+      <label class="chk"><input type="checkbox" id="rcTypeMode"> Yêu cầu gõ đáp án (nghiêm khắc hơn)</label>
+      <label class="chk"><input type="checkbox" id="rcNewLimit" checked> Giới hạn 10 từ mới/buổi</label>
+    </div>
+  </div>
+
+  <div class="paper card" id="rcCard">
     <div class="stamp" id="rcStamp">ĐÚNG</div>
     <div class="idx" id="rcProgress">Còn 0 từ</div>
-    <div class="mean" id="rcMean" style="font-size:clamp(24px,4.6vw,40px);margin-top:16px">—</div>
+
+    <div class="mean" id="rcMean" style="font-size:clamp(24px,4.6vw,40px);margin-top:14px">—</div>
     <p class="ex" id="rcEx"></p>
-    <div class="row">
-      <input class="inp" id="rcInput" placeholder="Gõ từ tiếng Anh…" autocomplete="off" autocapitalize="off" spellcheck="false" style="font-size:22px;text-align:center;min-width:250px">
-      <button class="btn teal" id="rcCheck">Kiểm tra</button>
+
+    <div id="rcAnswer" hidden>
+      <div class="word" id="rcWord" style="font-size:clamp(34px,7vw,56px);margin-top:14px">—</div>
+      <div class="ipa" id="rcIpa">—</div>
+      <div class="stress" id="rcStress" hidden></div>
+      <div class="mnemonic" id="rcMnemonic" hidden></div>
     </div>
-    <div class="row" style="margin-top:8px">
+
+    <div class="row" id="rcRowShow">
+      <input class="inp" id="rcInput" placeholder="Gõ từ tiếng Anh (tuỳ chọn)…" autocomplete="off" autocapitalize="off" spellcheck="false" hidden style="font-size:20px;text-align:center;min-width:220px">
+      <button class="btn teal" id="rcShow">Xem đáp án (Space)</button>
       <button class="btn ghost small" id="rcHintBtn">Gợi ý chữ cái</button>
-      <button class="btn ghost small" id="rcSkip">Chưa nhớ, xem đáp án</button>
     </div>
+
+    <div class="row srs-grades" id="rcRowGrades" hidden>
+      <button class="btn red srs-btn" data-q="0"><span>Quên</span><small id="intAgain">&lt;1m</small><kbd>1</kbd></button>
+      <button class="btn srs-btn" data-q="3"><span>Khó</span><small id="intHard">—</small><kbd>2</kbd></button>
+      <button class="btn teal srs-btn" data-q="4"><span>Tốt</span><small id="intGood">—</small><kbd>3</kbd></button>
+      <button class="btn gold srs-btn" data-q="5"><span>Dễ</span><small id="intEasy">—</small><kbd>4</kbd></button>
+    </div>
+
     <div class="verdict">
-      <div class="score-line" id="rcMsg">Nhìn nghĩa tiếng Việt rồi viết lại từ tiếng Anh.</div>
+      <div class="score-line" id="rcMsg">Nhìn nghĩa tiếng Việt, đọc thầm câu ví dụ, rồi bấm "Xem đáp án".</div>
       <div class="heard" id="rcHint"></div>
     </div>
   </div>
 
   <div class="paper side" style="margin-top:18px;padding:18px">
-    <h3>Lịch ôn tập</h3>
-    <p class="lead" style="font-size:14px">Mỗi từ nhớ đúng sẽ được hẹn ôn lại xa dần: cùng buổi → 1 ngày → 3 ngày → 7 ngày → 14 ngày. Sai thì quay về đầu.</p>
+    <h3>Lịch ôn tập (SM-2 Anki-style)</h3>
+    <p class="lead" style="font-size:14px">Mỗi lần trả lời, thuật toán SM-2 tự tính khoảng cách ôn tiếp: Quên → reset về hôm nay; Tốt → khoảng cách × hệ số dễ. Từ "Dễ" liên tục sẽ giãn ra hàng tuần → hàng tháng, tiết kiệm thời gian ôn.</p>
     <div id="rcSchedule"></div>
     <div class="row" style="justify-content:flex-start;margin-top:12px">
       <button class="btn small" id="rcAll">Ôn toàn bộ ngay</button>
@@ -1540,10 +1590,22 @@ document.addEventListener("keydown", (e) => {
   if(tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
   if(e.metaKey || e.ctrlKey || e.altKey) return;
   const key = e.key;
-  const map = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-verb","5":"tab-game"};
-  if(map[key]){ e.preventDefault(); activateTab(map[key]); return; }
-  if(key === "t" || key === "T"){ e.preventDefault(); $("#btnTheme").click(); return; }
+  const recallOn = $("#p-recall").classList.contains("on");
   const labOn = $("#p-lab").classList.contains("on");
+  /* SRS grading takes precedence over tab shortcuts when answer is revealed */
+  if(recallOn && RC.cur && RC.revealed && "1234".includes(key)){
+    e.preventDefault();
+    const map = {"1":0, "2":3, "3":4, "4":5};
+    gradeCard(map[key]);
+    return;
+  }
+  const tabMap = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-verb","5":"tab-game"};
+  if(tabMap[key]){ e.preventDefault(); activateTab(tabMap[key]); return; }
+  if(key === "t" || key === "T"){ e.preventDefault(); $("#btnTheme").click(); return; }
+  if(recallOn){
+    if(key === " "){ e.preventDefault(); if(RC.cur && !RC.revealed) $("#rcShow").click(); return; }
+    if(key === "h" || key === "H"){ e.preventDefault(); $("#rcHintBtn").click(); return; }
+  }
   if(!labOn) return;
   if(key === " "){ e.preventDefault(); $("#btnListen").click(); return; }
   if(key === "ArrowRight"){ e.preventDefault(); $("#btnNext").click(); return; }
@@ -1688,6 +1750,7 @@ function switchUnit(key){
   fillEditor();
   renderLab();
   newMatch();
+  if(typeof startRecall === "function") startRecall(false);
 }
 populateLevelSelect();
 populateUnitSelect();
@@ -1914,103 +1977,256 @@ const store = (()=>{
   };
 })();
 const PROG_KEY = "greetings-progress-v1";
-const INTERVALS = [0,1,3,7,14];      // số ngày chờ ứng với hộp 1→5
+const STREAK_KEY = "gc-streak-v1";
+const REVIEW_LOG_KEY = "gc-review-log-v1";
 let prog = store.get(PROG_KEY,{}) || {};
-const today = ()=>Math.floor(Date.now()/86400000);
-const saveProg = ()=>store.set(PROG_KEY,prog);
+let streak = store.get(STREAK_KEY, {current:0, longest:0, lastDay:null, days:[]}) || {current:0, longest:0, lastDay:null, days:[]};
+let reviewLog = store.get(REVIEW_LOG_KEY, {total:0, correct:0, byDay:{}}) || {total:0, correct:0, byDay:{}};
+const today = () => Math.floor(Date.now()/86400000);
+const saveProg = () => store.set(PROG_KEY, prog);
+const saveStreak = () => store.set(STREAK_KEY, streak);
+const saveReviewLog = () => store.set(REVIEW_LOG_KEY, reviewLog);
 
-const RC = {queue:[], cur:null, revealed:false};
+/* Chuyển tiến độ cũ (box 1-5) sang định dạng SM-2 mới, giữ nguyên độ mastery */
+(function migrateProgress(){
+  let changed = false;
+  const legacyIntervals = [0,1,3,7,14];
+  Object.keys(prog).forEach(k => {
+    const p = prog[k];
+    if(p && p.box !== undefined && p.ef === undefined){
+      const b = p.box || 1;
+      p.ef = 2.5;
+      p.reps = Math.max(0, b - 1);
+      p.interval = legacyIntervals[b - 1] || 0;
+      p.lapses = 0;
+      delete p.box;
+      changed = true;
+    }
+  });
+  if(changed) saveProg();
+})();
+
+/* Thuật toán SM-2 rút gọn (SuperMemo-2, cùng dòng với Anki) */
+function calcNext(oldP, quality){
+  const p = Object.assign({ef:2.5, interval:0, reps:0, lapses:0}, oldP || {});
+  if(quality < 3){
+    p.reps = 0;
+    p.interval = 0;
+    p.lapses = (p.lapses||0) + 1;
+    p.ef = Math.max(1.3, p.ef - 0.2);
+  } else {
+    if(p.reps === 0){ p.interval = 1; }
+    else if(p.reps === 1){ p.interval = quality === 5 ? 4 : 3; }
+    else { p.interval = Math.max(1, Math.round(p.interval * p.ef)); }
+    p.reps++;
+    p.ef = Math.max(1.3, p.ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+    if(quality === 5 && p.reps > 1) p.interval = Math.round(p.interval * 1.15);
+  }
+  p.due = today() + p.interval;
+  p.lastReviewed = today();
+  return p;
+}
+function formatInterval(days){
+  if(days < 1) return "<1m";
+  if(days === 1) return "1d";
+  if(days < 30) return days + "d";
+  if(days < 365) return Math.round(days/30) + "mo";
+  return Math.round(days/365) + "y";
+}
+
+/* Streak — cộng chuỗi khi có ít nhất 1 lần review hôm nay */
+function bumpStreak(){
+  const d = today();
+  if(streak.lastDay === d) return;
+  if(streak.lastDay === d - 1) streak.current++;
+  else streak.current = 1;
+  streak.longest = Math.max(streak.longest || 0, streak.current);
+  streak.lastDay = d;
+  streak.days = streak.days || [];
+  if(!streak.days.includes(d)) streak.days.push(d);
+  if(streak.days.length > 365) streak.days = streak.days.slice(-365);
+  saveStreak();
+}
+function ensureStreakFresh(){
+  if(streak.lastDay != null && streak.lastDay < today() - 1) streak.current = 0;
+}
+
+const RC = {queue:[], cur:null, revealed:false, sessionCount:0, sessionCorrect:0};
 
 function dueList(){
-  return WORDS.filter(w=>{ const p=prog[w.en]; return !p || p.due<=today(); });
+  const t = today();
+  const limitNew = $("#rcNewLimit") && $("#rcNewLimit").checked;
+  const NEW_CAP = 10;
+  const due = [], fresh = [];
+  WORDS.forEach(w => {
+    const p = prog[w.en];
+    if(!p){ fresh.push(w); }
+    else if(p.due <= t){ due.push(w); }
+  });
+  const news = limitNew ? fresh.slice(0, NEW_CAP) : fresh;
+  return shuffle(due).concat(shuffle(news));
 }
+
+function updateDashboard(){
+  ensureStreakFresh();
+  const t = today();
+  let dueCount = 0, newCount = 0, matureCount = 0;
+  WORDS.forEach(w => {
+    const p = prog[w.en];
+    if(!p){ newCount++; }
+    else {
+      if(p.due <= t) dueCount++;
+      if((p.interval || 0) >= 21) matureCount++;
+    }
+  });
+  $("#rcDue").textContent = dueCount;
+  $("#rcNew").textContent = newCount;
+  $("#rcMature").textContent = matureCount;
+  $("#rcStreak").textContent = (streak.current || 0) + "🔥";
+  if(reviewLog.total > 0){
+    const r = Math.round(100 * reviewLog.correct / reviewLog.total);
+    $("#rcRetention").textContent = r + "%";
+  } else $("#rcRetention").textContent = "—";
+}
+
 function startRecall(all){
-  const src = all ? WORDS.slice() : dueList();
-  RC.queue = shuffle(src.length ? src : WORDS.slice());
+  const src = all ? shuffle(WORDS.slice()) : dueList();
+  RC.queue = src.length ? src : shuffle(WORDS.slice());
   RC.cur = null;
+  RC.sessionCount = 0; RC.sessionCorrect = 0;
   nextRecall();
   renderSchedule();
+  updateDashboard();
 }
 function nextRecall(){
   $("#rcStamp").className = "stamp";
   $("#rcHint").textContent = "";
   $("#rcInput").value = "";
+  $("#rcAnswer").hidden = true;
+  $("#rcRowShow").hidden = false;
+  $("#rcRowGrades").hidden = true;
   RC.revealed = false;
   if(!RC.queue.length){
     RC.cur = null;
-    $("#rcProgress").textContent = "Xong lượt ôn";
-    $("#rcMean").textContent = "Hết từ cần ôn hôm nay";
-    $("#rcEx").textContent = "";
-    $("#rcMsg").textContent = "Quay lại vào ngày hẹn kế tiếp, hoặc bấm “Ôn toàn bộ ngay”.";
-    $("#rcInput").disabled = true; $("#rcCheck").disabled = true;
+    $("#rcProgress").textContent = "Xong buổi ôn";
+    $("#rcMean").textContent = RC.sessionCount ? `🎉 Hoàn thành ${RC.sessionCount} từ` : "Hết từ cần ôn hôm nay";
+    $("#rcEx").textContent = RC.sessionCount ? `Đúng ${RC.sessionCorrect}/${RC.sessionCount} — ${Math.round(100*RC.sessionCorrect/Math.max(1,RC.sessionCount))}%` : "";
+    $("#rcMsg").textContent = 'Quay lại ngày mai để duy trì chuỗi, hoặc bấm "Ôn toàn bộ ngay".';
+    $("#rcRowShow").hidden = true;
     renderSchedule();
+    updateDashboard();
     return;
   }
-  $("#rcInput").disabled = false; $("#rcCheck").disabled = false;
   RC.cur = RC.queue[0];
-  $("#rcProgress").textContent = `Còn ${RC.queue.length} từ trong lượt ôn`;
+  $("#rcProgress").textContent = `Còn ${RC.queue.length} từ · Buổi này: ${RC.sessionCount}`;
   $("#rcMean").textContent = RC.cur.vi;
   $("#rcEx").textContent = (RC.cur.ex||"").replace("___","______");
-  $("#rcMsg").textContent = "Nhìn nghĩa tiếng Việt rồi viết lại từ tiếng Anh.";
-  $("#rcInput").focus();
+  $("#rcMsg").textContent = 'Nhìn nghĩa + câu ví dụ, đọc thầm từ tiếng Anh, rồi bấm "Xem đáp án".';
+  const typeMode = $("#rcTypeMode").checked;
+  $("#rcInput").hidden = !typeMode;
+  if(typeMode) setTimeout(()=>$("#rcInput").focus(), 30);
 }
-function gradeRecall(correct){
-  const w = RC.cur; if(!w) return;
-  const p = prog[w.en] || {box:1};
-  if(correct){
-    p.box = Math.min(5, (p.box||1)+1);
-    p.due = today() + INTERVALS[p.box-1];
-    prog[w.en] = p; saveProg();
-    RC.queue.shift();
-    speak(w.en,1);
-    $("#rcStamp").className="stamp"; $("#rcStamp").textContent="ĐÚNG";
-    void $("#rcStamp").offsetWidth; $("#rcStamp").classList.add("show");
-    $("#rcMsg").textContent = p.box>=5 ? `Thuộc rồi — hẹn ôn sau ${INTERVALS[p.box-1]} ngày.` : `Đúng — hẹn ôn lại sau ${INTERVALS[p.box-1]} ngày.`;
-    setTimeout(nextRecall, 900);
-  }else{
-    p.box = 1; p.due = today();
-    prog[w.en] = p; saveProg();
-    RC.queue.shift(); RC.queue.push(w);      // gặp lại ở cuối lượt
-    speak(w.en,.8);
-    $("#rcStamp").className="stamp miss"; $("#rcStamp").textContent="ÔN LẠI";
-    void $("#rcStamp").offsetWidth; $("#rcStamp").classList.add("show");
-    $("#rcMsg").textContent = `Đáp án: ${w.en} ${w.ipa}`;
-    $("#rcHint").textContent = "Từ này sẽ quay lại ở cuối lượt.";
-    setTimeout(nextRecall, 2200);
-  }
-  renderSchedule();
-}
-function checkRecall(){
+function revealAnswer(){
   if(!RC.cur || RC.revealed) return;
-  const typed = norm($("#rcInput").value);
-  if(!typed) return;
   RC.revealed = true;
-  gradeRecall(typed === norm(RC.cur.en));
+  const w = RC.cur;
+  $("#rcWord").textContent = w.en;
+  $("#rcIpa").textContent = w.ipa || "";
+  const st = $("#rcStress");
+  if(w.stress){ st.hidden = false; st.textContent = w.stress; } else st.hidden = true;
+  const mn = $("#rcMnemonic");
+  if(w.mnemonic){ mn.hidden = false; mn.textContent = w.mnemonic; } else mn.hidden = true;
+  $("#rcAnswer").hidden = false;
+  speak(w.en, 1);
+  const p = prog[w.en];
+  const preview = q => formatInterval(calcNext(p, q).interval);
+  $("#intAgain").textContent = "<1m";
+  $("#intHard").textContent = preview(3);
+  $("#intGood").textContent = preview(4);
+  $("#intEasy").textContent = preview(5);
+  $("#rcRowGrades").hidden = false;
+  const typeMode = $("#rcTypeMode").checked;
+  if(typeMode && $("#rcInput").value){
+    const correct = norm($("#rcInput").value) === norm(w.en);
+    $("#rcMsg").textContent = correct ? "Gõ đúng — bạn tự chấm từ Tốt trở lên." : `Gõ chưa đúng (bạn viết: "${$("#rcInput").value}"). Cân nhắc Quên/Khó.`;
+  } else {
+    $("#rcMsg").textContent = "Tự chấm mức nhớ. Nghiên cứu cho thấy tự đánh giá càng chính xác → SRS càng tối ưu.";
+  }
 }
+function gradeCard(quality){
+  const w = RC.cur; if(!w || !RC.revealed) return;
+  const newP = calcNext(prog[w.en], quality);
+  prog[w.en] = newP; saveProg();
+  RC.sessionCount++;
+  if(quality >= 3) RC.sessionCorrect++;
+  reviewLog.total = (reviewLog.total||0) + 1;
+  if(quality >= 3) reviewLog.correct = (reviewLog.correct||0) + 1;
+  const dk = String(today());
+  reviewLog.byDay = reviewLog.byDay || {};
+  reviewLog.byDay[dk] = (reviewLog.byDay[dk] || 0) + 1;
+  saveReviewLog();
+  bumpStreak();
+  if(quality < 3){
+    RC.queue.shift(); RC.queue.push(w);
+  } else {
+    RC.queue.shift();
+  }
+  const stamp = $("#rcStamp");
+  stamp.className = "stamp" + (quality < 3 ? " miss" : "");
+  stamp.textContent = quality === 0 ? "QUÊN" : quality === 3 ? "KHÓ" : quality === 4 ? "TỐT" : "DỄ";
+  void stamp.offsetWidth; stamp.classList.add("show");
+  setTimeout(nextRecall, 550);
+  renderSchedule();
+  updateDashboard();
+}
+
 function renderSchedule(){
-  const box = $("#rcSchedule"); box.innerHTML = "";
-  WORDS.forEach(w=>{
+  const box = $("#rcSchedule");
+  if(!box) return;
+  box.innerHTML = "";
+  const t = today();
+  const sorted = WORDS.slice().sort((a,b) => {
+    const pa = prog[a.en], pb = prog[b.en];
+    const da = pa ? pa.due - t : 9999;
+    const db = pb ? pb.due - t : 9999;
+    return da - db;
+  });
+  sorted.slice(0, 60).forEach(w => {
     const p = prog[w.en];
-    const b = p ? p.box : 0;
-    const d = p ? p.due - today() : 0;
-    const when = !p ? "chưa học" : d<=0 ? "ôn hôm nay" : `sau ${d} ngày`;
+    const days = p ? p.due - t : null;
+    const when = !p ? "chưa học" : days <= 0 ? "ôn hôm nay" : `sau ${days}d`;
+    const level = !p ? 0 : Math.min(5, Math.floor((p.interval||0) / 7) + 1);
     const row = document.createElement("div");
     row.className = "sched";
     row.innerHTML = `<b>${w.en}</b><span class="when">${when}</span>
-      <span class="boxes">${[1,2,3,4,5].map(i=>`<i class="${i<=b?"on":""}"></i>`).join("")}</span>`;
+      <span class="boxes">${[1,2,3,4,5].map(i=>`<i class="${i<=level?"on":""}"></i>`).join("")}</span>`;
     box.appendChild(row);
   });
 }
-$("#rcCheck").addEventListener("click", checkRecall);
-$("#rcInput").addEventListener("keydown", e=>{ if(e.key==="Enter") checkRecall(); });
-$("#rcHintBtn").addEventListener("click",()=>{
+
+$("#rcShow").addEventListener("click", revealAnswer);
+$("#rcInput").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); revealAnswer(); } });
+$("#rcHintBtn").addEventListener("click", () => {
   if(!RC.cur) return;
   const w = RC.cur.en;
-  $("#rcHint").textContent = `${w[0]}${" _".repeat(w.length-1)}  ·  ${w.length} chữ cái  ·  ${RC.cur.ipa}`;
+  $("#rcHint").textContent = `${w[0]}${" _".repeat(w.length-1)}  ·  ${w.length} chữ  ·  ${RC.cur.ipa}`;
 });
-$("#rcSkip").addEventListener("click",()=>{ if(RC.cur && !RC.revealed){ RC.revealed=true; gradeRecall(false); } });
-$("#rcAll").addEventListener("click",()=>startRecall(true));
-$("#rcClear").addEventListener("click",()=>{ if(confirm("Xóa toàn bộ tiến độ đã lưu?")){ prog={}; saveProg(); startRecall(true); } });
+document.querySelectorAll(".srs-btn").forEach(b => {
+  b.addEventListener("click", () => gradeCard(parseInt(b.dataset.q, 10)));
+});
+$("#rcAll").addEventListener("click", () => startRecall(true));
+$("#rcClear").addEventListener("click", () => {
+  if(confirm("Xóa toàn bộ tiến độ SRS + streak + retention log?")){
+    prog = {}; saveProg();
+    streak = {current:0, longest:0, lastDay:null, days:[]}; saveStreak();
+    reviewLog = {total:0, correct:0, byDay:{}}; saveReviewLog();
+    startRecall(false);
+  }
+});
+$("#rcTypeMode").addEventListener("change", () => {
+  $("#rcInput").hidden = !$("#rcTypeMode").checked;
+});
+$("#rcNewLimit").addEventListener("change", () => { if(!RC.revealed) startRecall(false); });
 
 /* ---------------- Bàn cờ ---------------- */
 const G = {teams:[], turn:0, cells:[], busy:false, over:false, deck:[], lastRound:false, timer:null, sound:false, gen:0};
