@@ -401,8 +401,14 @@ nav.tabs{
   transition:border-color var(--dur-fast) var(--ease);
 }
 .ap-num{width:56px;text-align:center}
-.ap-sel{max-width:220px}
+.ap-sel{max-width:260px;min-width:120px}
 .ap-num:focus-visible,.ap-sel:focus-visible{border-color:var(--accent);box-shadow:var(--sh-focus);outline:none}
+/* Force select options to inherit correct colors — fixes white-on-white bug */
+select,.ap-sel,.unit-select,#voicePicker{color:var(--text);background-color:var(--surface)}
+select option,.ap-sel option,.unit-select option,#voicePicker option{
+  color:var(--text);
+  background-color:var(--surface);
+}
 .autoplay-status{
   font-size:var(--fs-sm);color:var(--text-muted);
   margin-top:var(--sp-3);min-height:20px;text-align:center;font-weight:500;
@@ -2402,35 +2408,33 @@ function refreshVoicePicker(){
 }
 if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
-/* Pre-warm speech engine ngay khi có tương tác đầu tiên (Chrome cần user gesture) */
-let ttsWarmed = false;
-function warmTTS(){
-  if(ttsWarmed || !window.speechSynthesis) return;
-  ttsWarmed = true;
-  try{
-    const u = new SpeechSynthesisUtterance(" ");
-    u.volume = 0; u.rate = 10;
-    if(enVoice) u.voice = enVoice;
-    speechSynthesis.speak(u);
-  }catch(_){}
-}
-document.addEventListener("click", warmTTS, {once:true, capture:true});
-document.addEventListener("keydown", warmTTS, {once:true, capture:true});
-
-/* Chrome tự pause speechSynthesis sau ~15s. Keep-alive resume mỗi 10s. */
+/* Chrome tự pause speechSynthesis sau ~15s im lặng. Keep-alive resume định kỳ. */
 if(window.speechSynthesis){
   setInterval(() => {
-    if(speechSynthesis.paused && speechSynthesis.speaking) speechSynthesis.resume();
-  }, 10000);
+    try{
+      if(speechSynthesis.paused && speechSynthesis.speaking) speechSynthesis.resume();
+    }catch(_){}
+  }, 8000);
 }
 
 function speak(text, rate){
   if(!window.speechSynthesis || !text) return;
-  /* chỉ cancel khi đang speaking để tránh delay không cần thiết */
-  if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US"; u.rate = rate || 1; if(enVoice) u.voice = enVoice;
-  speechSynthesis.speak(u);
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text));
+    u.lang = "en-US";
+    u.rate = Math.min(2, Math.max(0.5, Number(rate) || 1));
+    u.volume = 1;
+    u.pitch = 1;
+    if(enVoice) u.voice = enVoice;
+    u.onerror = (ev) => { console.warn("TTS error:", ev.error || ev); };
+    /* Chrome đôi khi cần setTimeout để tránh race condition với cancel() */
+    setTimeout(() => {
+      try{ speechSynthesis.speak(u); }catch(e){ console.warn("speak failed:", e); }
+    }, 0);
+  }catch(e){
+    console.warn("speak setup failed:", e);
+  }
 }
 
 /* ---------------- Micro ---------------- */
@@ -4584,7 +4588,26 @@ $("#rcStoreNote").textContent = store.ok
 /* ---------------- Service worker (PWA offline) ---------------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.register("sw.js").then((reg) => {
+      /* Kiểm tra update mỗi lần load */
+      reg.update();
+      reg.addEventListener("updatefound", () => {
+        const nw = reg.installing;
+        if(!nw) return;
+        nw.addEventListener("statechange", () => {
+          if(nw.state === "installed" && navigator.serviceWorker.controller){
+            /* Có bản mới đã cài — reload để dùng luôn */
+            if(confirm("Đã có phiên bản mới. Reload để cập nhật?")) location.reload();
+          }
+        });
+      });
+    }).catch(() => {});
+    /* Reload khi SW controller đổi */
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if(reloaded) return; reloaded = true;
+      /* không auto reload — user đã confirm ở updatefound */
+    });
   });
 }
 </script>
