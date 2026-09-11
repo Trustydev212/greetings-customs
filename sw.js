@@ -1,4 +1,4 @@
-const CACHE = "gc-v5";
+const CACHE = "gc-v6";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 const SKIP_HOSTS = ["api.datamuse.com","en.wiktionary.org","en.wikipedia.org","upload.wikimedia.org","generativelanguage.googleapis.com","api.anthropic.com"];
 
