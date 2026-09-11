@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Greetings &amp; Customs — Phòng luyện tiếng Anh</title>
 <meta name="description" content="Luyện phát âm có chấm điểm bằng giọng nói, nối từ và bàn cờ chào hỏi vòng quanh thế giới cho lớp học.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0E2340">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="G&amp;C English">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
@@ -2534,6 +2541,13 @@ renderFilters(); buildVQueue(); nextVerb(); renderVTable();
 $("#rcStoreNote").textContent = store.ok
   ? "Tiến độ lưu ngay trong trình duyệt của mỗi bạn, không gửi đi đâu. Đổi máy hoặc xóa lịch sử là mất."
   : "Trình duyệt đang chặn lưu trữ, nên tiến độ chỉ giữ trong phiên này. Mở trang trực tiếp bằng link GitHub Pages để lưu được.";
+
+/* ---------------- Service worker (PWA offline) ---------------- */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>

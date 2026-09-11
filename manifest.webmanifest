@@ -1,0 +1,21 @@
+{
+  "name": "Greetings & Customs — Phòng luyện tiếng Anh",
+  "short_name": "G&C English",
+  "description": "Tự học tiếng Anh chuyên sâu theo Top Notch/Summit — phát âm chuẩn IPA, mẹo nhớ tiếng Việt, spaced repetition.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E2340",
+  "theme_color": "#0E2340",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"]
+}
