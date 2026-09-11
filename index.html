@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* Brand palette */
   --navy:#0E2340;
   --navy-2:#17324F;
   --navy-3:#20415F;
@@ -19,9 +20,49 @@
   --teal:#1B7A62;
   --gold:#E0A82E;
   --ink:#122036;
-  --r:14px;
+  /* Space scale (4px base) */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
+  /* Type scale */
+  --fs-xs:12px; --fs-sm:13.5px; --fs-base:15.5px; --fs-md:17px; --fs-lg:19px; --fs-xl:22px; --fs-2xl:28px;
+  /* Radius */
+  --r:14px; --r-sm:8px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-pill:99px;
+  /* Elevation */
   --shadow:0 10px 0 rgba(0,0,0,.22);
+  --shadow-sm:0 4px 0 rgba(0,0,0,.18);
+  --shadow-md:0 10px 24px rgba(0,0,0,.15);
+  --shadow-lg:0 20px 40px rgba(0,0,0,.25);
+  /* Semantic (light/paper mode default) */
+  --bg-app:var(--navy);
+  --bg-app-2:var(--navy-2);
+  --bg-card:var(--paper);
+  --bg-card-2:var(--paper-2);
+  --text-strong:var(--paper);
+  --text-card:var(--ink);
+  --text-muted-card:rgba(18,32,54,.62);
+  --border-soft:rgba(241,231,210,.35);
+  --border-card:rgba(18,32,54,.14);
+  --accent:var(--gold);
+  --accent-2:var(--red);
+  --success:var(--teal);
 }
+[data-theme="dark"]{
+  --navy:#050B18;
+  --navy-2:#0B1830;
+  --navy-3:#122549;
+  --paper:#1E2B44;
+  --paper-2:#2A3B5C;
+  --ink:#EDE7D4;
+  --bg-app:#050B18;
+  --bg-app-2:#0B1830;
+  --bg-card:#1E2B44;
+  --bg-card-2:#2A3B5C;
+  --text-card:#EDE7D4;
+  --text-muted-card:rgba(237,231,212,.62);
+  --border-card:rgba(237,231,212,.16);
+  --shadow:0 10px 0 rgba(0,0,0,.5);
+  --shadow-sm:0 4px 0 rgba(0,0,0,.4);
+}
+html{color-scheme:light dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;padding:0}
@@ -331,6 +372,56 @@ textarea.short{min-height:110px}
 .vrow:hover{background:rgba(18,32,54,.06)}
 .vrow.head{font-weight:800;border-bottom:2px solid rgba(18,32,54,.3)}
 .vrow .vi{color:rgba(18,32,54,.7)}
+/* ---------- Theme toggle button ---------- */
+.theme-toggle{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(241,231,210,.12);color:var(--paper);
+  border:1.5px solid rgba(241,231,210,.35);
+  display:grid;place-items:center;font-size:18px;
+  transition:transform .15s ease, background .15s ease;
+}
+.theme-toggle:hover{background:rgba(241,231,210,.22);transform:scale(1.05)}
+.theme-toggle:active{transform:scale(.95)}
+
+/* ---------- Mobile responsive fine-tuning ---------- */
+@media (max-width:768px){
+  .wrap{padding:12px 12px 80px}
+  header.top{padding:12px 14px;gap:10px}
+  .brand{min-width:0;flex:1 1 100%;gap:10px}
+  .seal{width:44px;height:44px;font-size:20px}
+  .brand h1{font-size:20px}
+  .brand p{font-size:12.5px}
+  .unit-select{font-size:13px;padding:6px 10px;width:100%}
+  nav.tabs{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:thin}
+  nav.tabs::-webkit-scrollbar{height:4px}
+  .tab{padding:9px 12px;font-size:13.5px;white-space:nowrap;flex:none}
+  .theme-toggle{width:38px;height:38px;font-size:16px;position:absolute;top:12px;right:12px}
+  .card{padding:20px 16px 18px}
+  .word{font-size:clamp(34px,10vw,58px)}
+  .btn{padding:11px 16px;font-size:14.5px}
+  .btn.small{padding:8px 12px;font-size:13px}
+  .row{gap:8px;margin-top:14px}
+  .autoplay-panel{padding:10px 12px;margin-top:14px}
+  .autoplay-row{gap:8px 12px;font-size:13px}
+  .autoplay-row label{font-size:13px}
+  .ap-num{width:44px;padding:4px 6px}
+  .ap-sel{padding:4px 6px;font-size:13px;max-width:150px}
+  .side{padding:14px}
+  .wordlist{max-height:280px}
+  details.editor summary{font-size:14px}
+}
+@media (max-width:480px){
+  .word{font-size:clamp(30px,11vw,46px);margin:4px 0 2px}
+  .ipa{font-size:16px}
+  .syl{font-size:13px}
+  .stress{font-size:12.5px}
+  .mean{font-size:16px;margin-top:8px}
+  .note,.mnemonic{font-size:12.5px;padding:3px 8px}
+  .ex{font-size:14px}
+  .btn{padding:10px 14px;font-size:14px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+  .autoplay-panel{padding:10px}
+}
+
 @media(max-width:560px){
   .vrow{grid-template-columns:1fr 1fr 1fr;font-size:13px}
   .vrow .vi{grid-column:1 / -1;font-size:12.5px}
@@ -382,12 +473,13 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
     </div>
   </div>
   <nav class="tabs" role="tablist" aria-label="Chọn hoạt động">
-    <button class="tab" role="tab" id="tab-lab" aria-selected="true" aria-controls="p-lab">Luyện phát âm</button>
-    <button class="tab" role="tab" id="tab-match" aria-selected="false" aria-controls="p-match">Nối từ</button>
-    <button class="tab" role="tab" id="tab-recall" aria-selected="false" aria-controls="p-recall">Nhớ lại</button>
-    <button class="tab" role="tab" id="tab-verb" aria-selected="false" aria-controls="p-verb">Động từ V1 V2 V3</button>
-    <button class="tab" role="tab" id="tab-game" aria-selected="false" aria-controls="p-game">Bàn cờ lớp học</button>
+    <button class="tab" role="tab" id="tab-lab" aria-selected="true" aria-controls="p-lab" title="Phím tắt: 1">Luyện phát âm</button>
+    <button class="tab" role="tab" id="tab-match" aria-selected="false" aria-controls="p-match" title="Phím tắt: 2">Nối từ</button>
+    <button class="tab" role="tab" id="tab-recall" aria-selected="false" aria-controls="p-recall" title="Phím tắt: 3">Nhớ lại</button>
+    <button class="tab" role="tab" id="tab-verb" aria-selected="false" aria-controls="p-verb" title="Phím tắt: 4">Động từ V1 V2 V3</button>
+    <button class="tab" role="tab" id="tab-game" aria-selected="false" aria-controls="p-game" title="Phím tắt: 5">Bàn cờ lớp học</button>
   </nav>
+  <button id="btnTheme" class="theme-toggle" type="button" aria-label="Đổi giao diện sáng/tối" title="Đổi sáng/tối (T)">🌙</button>
 </header>
 
 <!-- ============ 1. PHÁT ÂM ============ -->
@@ -1395,14 +1487,54 @@ function listen(target, onResult){
 
 /* ---------------- Tabs ---------------- */
 const panels = {"tab-lab":"p-lab","tab-match":"p-match","tab-recall":"p-recall","tab-verb":"p-verb","tab-game":"p-game"};
+function activateTab(tabId){
+  const t = document.getElementById(tabId);
+  if(!t) return;
+  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", x===t ? "true":"false"));
+  Object.values(panels).forEach(p=>$("#"+p).classList.remove("on"));
+  $("#"+panels[tabId]).classList.add("on");
+  if(tabId==="tab-match" && !matchState.started) newMatch();
+  if(tabId==="tab-recall") startRecall(false);
+}
 document.querySelectorAll(".tab").forEach(t=>{
-  t.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected", x===t ? "true":"false"));
-    Object.values(panels).forEach(p=>$("#"+p).classList.remove("on"));
-    $("#"+panels[t.id]).classList.add("on");
-    if(t.id==="tab-match" && !matchState.started) newMatch();
-    if(t.id==="tab-recall") startRecall(false);
-  });
+  t.addEventListener("click",()=>activateTab(t.id));
+});
+
+/* ---------------- Theme toggle (sáng/tối) ---------------- */
+const THEME_KEY = "gc-theme-v1";
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  const btn = $("#btnTheme");
+  if(btn) btn.textContent = theme === "dark" ? "☀️" : "🌙";
+  try{ localStorage.setItem(THEME_KEY, theme); }catch(_){}
+}
+(function initTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(_){}
+  if(saved === "dark" || saved === "light"){ applyTheme(saved); }
+  else if(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches){ applyTheme("dark"); }
+  else { applyTheme("light"); }
+})();
+$("#btnTheme").addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  applyTheme(cur === "dark" ? "light" : "dark");
+});
+
+/* ---------------- Keyboard shortcuts toàn cục ---------------- */
+document.addEventListener("keydown", (e) => {
+  const tag = (e.target && e.target.tagName || "").toLowerCase();
+  if(tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+  const key = e.key;
+  const map = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-verb","5":"tab-game"};
+  if(map[key]){ e.preventDefault(); activateTab(map[key]); return; }
+  if(key === "t" || key === "T"){ e.preventDefault(); $("#btnTheme").click(); return; }
+  const labOn = $("#p-lab").classList.contains("on");
+  if(!labOn) return;
+  if(key === " "){ e.preventDefault(); $("#btnListen").click(); return; }
+  if(key === "ArrowRight"){ e.preventDefault(); $("#btnNext").click(); return; }
+  if(key === "ArrowLeft"){ e.preventDefault(); $("#btnPrev").click(); return; }
+  if(key === "Enter"){ e.preventDefault(); $("#btnRec").click(); return; }
 });
 
 /* ---------------- 1. Phòng phát âm ---------------- */
