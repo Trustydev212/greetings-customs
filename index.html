@@ -382,6 +382,41 @@ textarea.short{min-height:110px}
 .vrow:hover{background:rgba(18,32,54,.06)}
 .vrow.head{font-weight:800;border-bottom:2px solid rgba(18,32,54,.3)}
 .vrow .vi{color:rgba(18,32,54,.7)}
+/* ---------- Luyện viết & nghe (sub-modes) ---------- */
+.submodes{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px}
+.submode{
+  padding:8px 12px;border-radius:8px;font-size:13.5px;font-weight:700;
+  background:rgba(18,32,54,.06);color:var(--ink);
+  border:1.5px solid rgba(18,32,54,.15);transition:all .15s ease;
+}
+.submode:hover{background:rgba(18,32,54,.12)}
+.submode.on{background:var(--navy);color:var(--paper);border-color:var(--gold)}
+[data-theme="dark"] .submode{background:rgba(237,231,212,.08);color:var(--paper)}
+[data-theme="dark"] .submode.on{background:var(--gold);color:var(--navy)}
+.wr-mode{padding:14px 0;text-align:center}
+.wr-input{
+  font-size:20px;text-align:center;min-width:250px;max-width:100%;
+  padding:12px 16px;border-radius:10px;font-family:inherit;font-weight:600;
+  border:2px solid rgba(18,32,54,.22);background:#fff;color:var(--ink);
+}
+.wr-input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(27,122,98,.15)}
+.wr-dict{
+  font-size:16px;padding:12px 16px;border-radius:10px;font-family:inherit;
+  border:2px solid rgba(18,32,54,.22);background:#fff;color:var(--ink);
+  width:100%;max-width:520px;margin:12px auto 0;display:block;resize:vertical;line-height:1.4;
+}
+.wr-dict:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(27,122,98,.15)}
+[data-theme="dark"] .wr-input, [data-theme="dark"] .wr-dict{background:var(--paper-2);border-color:rgba(237,231,212,.25);color:var(--ink)}
+.ex-fill{font-size:clamp(17px,2.6vw,20px);line-height:1.6;max-width:60ch;margin:14px auto 0;color:var(--ink)}
+.ex-fill mark{background:rgba(224,168,46,.4);padding:1px 6px;border-radius:4px;font-weight:700;color:var(--ink)}
+.wr-verdict{min-height:auto;margin-top:14px}
+.wr-verdict .heard{margin-top:4px}
+@media (max-width:480px){
+  .submode{padding:6px 10px;font-size:12.5px}
+  .wr-input{font-size:17px;padding:10px 12px;min-width:0;width:100%}
+  .wr-dict{font-size:14.5px}
+}
+
 /* ---------- SRS Dashboard ---------- */
 .srs-dashboard{padding:14px 18px;margin-bottom:14px}
 .srs-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
@@ -500,9 +535,10 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
   <nav class="tabs" role="tablist" aria-label="Chọn hoạt động">
     <button class="tab" role="tab" id="tab-lab" aria-selected="true" aria-controls="p-lab" title="Phím tắt: 1">Luyện phát âm</button>
     <button class="tab" role="tab" id="tab-match" aria-selected="false" aria-controls="p-match" title="Phím tắt: 2">Nối từ</button>
-    <button class="tab" role="tab" id="tab-recall" aria-selected="false" aria-controls="p-recall" title="Phím tắt: 3">Nhớ lại</button>
-    <button class="tab" role="tab" id="tab-verb" aria-selected="false" aria-controls="p-verb" title="Phím tắt: 4">Động từ V1 V2 V3</button>
-    <button class="tab" role="tab" id="tab-game" aria-selected="false" aria-controls="p-game" title="Phím tắt: 5">Bàn cờ lớp học</button>
+    <button class="tab" role="tab" id="tab-recall" aria-selected="false" aria-controls="p-recall" title="Phím tắt: 3">Nhớ lại (SRS)</button>
+    <button class="tab" role="tab" id="tab-write" aria-selected="false" aria-controls="p-write" title="Phím tắt: 4">Luyện viết & nghe</button>
+    <button class="tab" role="tab" id="tab-verb" aria-selected="false" aria-controls="p-verb" title="Phím tắt: 5">Động từ V1 V2 V3</button>
+    <button class="tab" role="tab" id="tab-game" aria-selected="false" aria-controls="p-game" title="Phím tắt: 6">Bàn cờ lớp học</button>
   </nav>
   <button id="btnTheme" class="theme-toggle" type="button" aria-label="Đổi giao diện sáng/tối" title="Đổi sáng/tối (T)">🌙</button>
 </header>
@@ -695,7 +731,106 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
   </div>
 </section>
 
-<!-- ============ 4. ĐỘNG TỪ ============ -->
+<!-- ============ 4. LUYỆN VIẾT & NGHE ============ -->
+<section class="panel" id="p-write" role="tabpanel" aria-labelledby="tab-write">
+  <div class="paper card" id="wrCard">
+    <div class="stamp" id="wrStamp">ĐÚNG</div>
+
+    <div class="submodes" role="tablist" aria-label="Chọn kiểu bài">
+      <button class="submode on" data-mode="fill" role="tab" aria-selected="true">✍️ Điền câu ví dụ</button>
+      <button class="submode" data-mode="dictation" role="tab" aria-selected="false">🎧 Nghe chép câu</button>
+      <button class="submode" data-mode="translate" role="tab" aria-selected="false">🌐 Dịch V→E</button>
+      <button class="submode" data-mode="sentence" role="tab" aria-selected="false">🤖 Tạo câu (AI chấm)</button>
+    </div>
+
+    <div class="idx" id="wrProgress">Từ 1/32 · Đúng 0</div>
+
+    <!-- Chế độ 1: Điền chỗ trống -->
+    <div class="wr-mode" id="wr-fill">
+      <div class="mean" id="wrFillMean">—</div>
+      <p class="ex ex-fill" id="wrFillEx">—</p>
+      <div class="row">
+        <input class="inp wr-input" id="wrFillInput" placeholder="Gõ từ đúng vào chỗ trống…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="row">
+        <button class="btn teal" id="wrFillCheck">Kiểm tra (Enter)</button>
+        <button class="btn ghost small" id="wrFillHint">Gợi ý (H)</button>
+        <button class="btn ghost small" id="wrFillReveal">Xem đáp án</button>
+      </div>
+    </div>
+
+    <!-- Chế độ 2: Nghe chép -->
+    <div class="wr-mode" id="wr-dictation" hidden>
+      <div class="mean" style="font-size:20px" id="wrDictInfo">🎧 Bấm ▶ để nghe câu ví dụ, rồi gõ lại nguyên văn.</div>
+      <div class="row">
+        <button class="btn" id="wrDictPlay">▶ Nghe (Space)</button>
+        <button class="btn ghost small" id="wrDictSlow">🐢 Nghe chậm</button>
+        <button class="btn ghost small" id="wrDictRepeat">🔁 Lặp lại</button>
+      </div>
+      <textarea class="inp wr-dict" id="wrDictInput" rows="3" placeholder="Gõ lại câu vừa nghe…" spellcheck="false"></textarea>
+      <div class="row">
+        <button class="btn teal" id="wrDictCheck">Kiểm tra</button>
+        <button class="btn ghost small" id="wrDictReveal">Xem đáp án</button>
+      </div>
+    </div>
+
+    <!-- Chế độ 3: Dịch V→E -->
+    <div class="wr-mode" id="wr-translate" hidden>
+      <div class="mean" id="wrTransVi">—</div>
+      <p class="ex" id="wrTransHint" style="font-style:italic;color:rgba(18,32,54,.55)">Ngữ cảnh: câu ví dụ sẽ hiện sau khi bạn kiểm tra.</p>
+      <input class="inp wr-input" id="wrTransInput" placeholder="Gõ từ tiếng Anh…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="row">
+        <button class="btn teal" id="wrTransCheck">Kiểm tra (Enter)</button>
+        <button class="btn ghost small" id="wrTransHintBtn">Gợi ý (H)</button>
+        <button class="btn ghost small" id="wrTransReveal">Xem đáp án</button>
+      </div>
+    </div>
+
+    <!-- Chế độ 4: AI tạo câu -->
+    <div class="wr-mode" id="wr-sentence" hidden>
+      <div class="word" id="wrSentWord" style="font-size:clamp(30px,6vw,48px)">—</div>
+      <div class="mean" id="wrSentMean" style="font-size:18px">—</div>
+      <p class="ex" style="margin-top:6px">Viết 1 câu tiếng Anh của riêng bạn có chứa từ trên. AI sẽ chấm ngữ pháp, dùng đúng nghĩa, tự nhiên.</p>
+      <textarea class="inp wr-dict" id="wrSentInput" rows="3" placeholder="I would like to make a reservation for two people…" spellcheck="false"></textarea>
+      <div class="row">
+        <button class="btn teal" id="wrSentCheck">🤖 Nhờ AI chấm</button>
+        <button class="btn ghost small" id="wrSentSkip">Bỏ qua</button>
+      </div>
+      <p class="hint" id="wrSentApiNote">Cần API key (Gemini/Claude). Dán key ở phần "Đổi danh sách từ" trong tab Luyện phát âm — dùng chung.</p>
+    </div>
+
+    <!-- Feedback + đáp án chi tiết -->
+    <div class="verdict wr-verdict">
+      <div class="score-line" id="wrMsg">Chọn chế độ ở trên. Kết quả sẽ tự cập nhật vào lịch SRS của bạn.</div>
+      <div class="heard" id="wrHint"></div>
+      <div id="wrReveal" hidden style="margin-top:10px;padding:10px;background:rgba(27,122,98,.1);border-radius:8px;text-align:left">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:baseline">
+          <b style="font-size:22px" id="wrRevWord">—</b>
+          <span class="ipa" id="wrRevIpa">—</span>
+        </div>
+        <div id="wrRevMean" style="font-size:14px;color:rgba(18,32,54,.75);margin-top:4px">—</div>
+        <div id="wrRevEx" style="font-size:13.5px;color:rgba(18,32,54,.7);margin-top:6px"></div>
+        <div class="mnemonic" id="wrRevMnem" hidden></div>
+      </div>
+    </div>
+
+    <!-- Grade buttons (sau khi kiểm tra, dùng chung với SRS) -->
+    <div class="row srs-grades" id="wrGrades" hidden>
+      <button class="btn red srs-btn" data-q="0"><span>Quên</span><small id="wrIntAgain">&lt;1m</small><kbd>1</kbd></button>
+      <button class="btn srs-btn" data-q="3"><span>Khó</span><small id="wrIntHard">—</small><kbd>2</kbd></button>
+      <button class="btn teal srs-btn" data-q="4"><span>Tốt</span><small id="wrIntGood">—</small><kbd>3</kbd></button>
+      <button class="btn gold srs-btn" data-q="5"><span>Dễ</span><small id="wrIntEasy">—</small><kbd>4</kbd></button>
+    </div>
+
+    <div class="row">
+      <button class="btn ghost small" id="wrPrev">← Từ trước</button>
+      <button class="btn ghost small" id="wrNext">Từ tiếp →</button>
+      <button class="btn ghost small" id="wrShuffle">🔀 Xáo lại</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. ĐỘNG TỪ ============ -->
 <section class="panel" id="p-verb" role="tabpanel" aria-labelledby="tab-verb">
   <div class="paper" style="padding:20px">
     <div class="match-head">
@@ -1550,7 +1685,7 @@ function listen(target, onResult){
 }
 
 /* ---------------- Tabs ---------------- */
-const panels = {"tab-lab":"p-lab","tab-match":"p-match","tab-recall":"p-recall","tab-verb":"p-verb","tab-game":"p-game"};
+const panels = {"tab-lab":"p-lab","tab-match":"p-match","tab-recall":"p-recall","tab-write":"p-write","tab-verb":"p-verb","tab-game":"p-game"};
 function activateTab(tabId){
   const t = document.getElementById(tabId);
   if(!t) return;
@@ -1559,6 +1694,7 @@ function activateTab(tabId){
   $("#"+panels[tabId]).classList.add("on");
   if(tabId==="tab-match" && !matchState.started) newMatch();
   if(tabId==="tab-recall") startRecall(false);
+  if(tabId==="tab-write" && typeof startWrite === "function") startWrite();
 }
 document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click",()=>activateTab(t.id));
@@ -1591,20 +1727,38 @@ document.addEventListener("keydown", (e) => {
   if(e.metaKey || e.ctrlKey || e.altKey) return;
   const key = e.key;
   const recallOn = $("#p-recall").classList.contains("on");
+  const writeOn = $("#p-write").classList.contains("on");
   const labOn = $("#p-lab").classList.contains("on");
-  /* SRS grading takes precedence over tab shortcuts when answer is revealed */
+  /* Grading buttons take precedence over tab shortcuts when card is checked */
   if(recallOn && RC.cur && RC.revealed && "1234".includes(key)){
     e.preventDefault();
     const map = {"1":0, "2":3, "3":4, "4":5};
     gradeCard(map[key]);
     return;
   }
-  const tabMap = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-verb","5":"tab-game"};
+  if(writeOn && WR.cur && WR.checked && "1234".includes(key)){
+    e.preventDefault();
+    const map = {"1":0, "2":3, "3":4, "4":5};
+    wrGradeCard(map[key]);
+    return;
+  }
+  const tabMap = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-write","5":"tab-verb","6":"tab-game"};
   if(tabMap[key]){ e.preventDefault(); activateTab(tabMap[key]); return; }
   if(key === "t" || key === "T"){ e.preventDefault(); $("#btnTheme").click(); return; }
   if(recallOn){
     if(key === " "){ e.preventDefault(); if(RC.cur && !RC.revealed) $("#rcShow").click(); return; }
     if(key === "h" || key === "H"){ e.preventDefault(); $("#rcHintBtn").click(); return; }
+  }
+  if(writeOn){
+    if(key === " " && WR.mode === "dictation"){ e.preventDefault(); $("#wrDictPlay").click(); return; }
+    if(key === "h" || key === "H"){
+      e.preventDefault();
+      if(WR.mode === "fill") $("#wrFillHint").click();
+      else if(WR.mode === "translate") $("#wrTransHintBtn").click();
+      return;
+    }
+    if(key === "ArrowRight"){ e.preventDefault(); $("#wrNext").click(); return; }
+    if(key === "ArrowLeft"){ e.preventDefault(); $("#wrPrev").click(); return; }
   }
   if(!labOn) return;
   if(key === " "){ e.preventDefault(); $("#btnListen").click(); return; }
@@ -1751,6 +1905,7 @@ function switchUnit(key){
   renderLab();
   newMatch();
   if(typeof startRecall === "function") startRecall(false);
+  if(typeof startWrite === "function") startWrite();
 }
 populateLevelSelect();
 populateUnitSelect();
@@ -2227,6 +2382,266 @@ $("#rcTypeMode").addEventListener("change", () => {
   $("#rcInput").hidden = !$("#rcTypeMode").checked;
 });
 $("#rcNewLimit").addEventListener("change", () => { if(!RC.revealed) startRecall(false); });
+
+/* ---------------- 4. Luyện viết & nghe ---------------- */
+const WR = { mode:"fill", queue:[], idx:0, cur:null, checked:false, correct:false, sessionCount:0, sessionCorrect:0 };
+
+function buildWriteQueue(){
+  const due = [], others = [];
+  const t = today();
+  WORDS.forEach(w => {
+    const p = prog[w.en];
+    if(!p || p.due <= t) due.push(w); else others.push(w);
+  });
+  return shuffle(due).concat(shuffle(others));
+}
+function startWrite(){
+  WR.queue = buildWriteQueue();
+  WR.idx = 0;
+  WR.cur = null;
+  WR.sessionCount = 0; WR.sessionCorrect = 0;
+  renderWrite();
+}
+function renderWrite(){
+  if(!WR.queue.length){ WR.queue = shuffle(WORDS.slice()); WR.idx = 0; }
+  WR.cur = WR.queue[WR.idx % WR.queue.length];
+  WR.checked = false; WR.correct = false;
+  const w = WR.cur;
+  $("#wrStamp").className = "stamp";
+  $("#wrProgress").textContent = `Từ ${WR.idx+1}/${WR.queue.length} · Đúng ${WR.sessionCorrect}/${WR.sessionCount}`;
+  $("#wrReveal").hidden = true;
+  $("#wrHint").textContent = "";
+  $("#wrGrades").hidden = true;
+  $("#wrMsg").textContent = writeModeIntro(WR.mode);
+
+  ["#wr-fill","#wr-dictation","#wr-translate","#wr-sentence"].forEach(id => $(id).hidden = true);
+  $("#wr-" + WR.mode).hidden = false;
+
+  if(WR.mode === "fill"){
+    $("#wrFillMean").textContent = w.vi;
+    const ex = (w.ex || "").replace("___","______");
+    $("#wrFillEx").textContent = ex || "(không có câu ví dụ)";
+    $("#wrFillInput").value = "";
+    $("#wrFillInput").disabled = false;
+    setTimeout(()=>$("#wrFillInput").focus(), 30);
+  } else if(WR.mode === "dictation"){
+    $("#wrDictInput").value = "";
+    $("#wrDictInput").disabled = false;
+    setTimeout(()=>$("#wrDictInput").focus(), 30);
+  } else if(WR.mode === "translate"){
+    $("#wrTransVi").textContent = w.vi;
+    $("#wrTransHint").textContent = "Ngữ cảnh: câu ví dụ sẽ hiện sau khi bạn kiểm tra.";
+    $("#wrTransInput").value = "";
+    $("#wrTransInput").disabled = false;
+    setTimeout(()=>$("#wrTransInput").focus(), 30);
+  } else if(WR.mode === "sentence"){
+    $("#wrSentWord").textContent = w.en;
+    $("#wrSentMean").textContent = w.vi + (w.ipa ? " · " + w.ipa : "");
+    $("#wrSentInput").value = "";
+    $("#wrSentInput").disabled = false;
+  }
+}
+function writeModeIntro(mode){
+  return ({
+    fill: "Đọc câu, gõ từ đúng vào chỗ trống. Bấm Enter để kiểm tra.",
+    dictation: "Bấm ▶ Nghe để phát câu, gõ lại nguyên văn rồi Kiểm tra.",
+    translate: "Nhìn nghĩa tiếng Việt, gõ từ tiếng Anh tương ứng.",
+    sentence: "Viết 1 câu tiếng Anh có chứa từ mục tiêu, AI sẽ chấm."
+  })[mode] || "";
+}
+function switchWriteMode(mode){
+  WR.mode = mode;
+  document.querySelectorAll(".submode").forEach(b => {
+    const on = b.dataset.mode === mode;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  renderWrite();
+}
+function normalize(s){ return String(s||"").toLowerCase().trim().replace(/[.,!?;:"'()]/g,"").replace(/\s+/g," "); }
+function showWriteReveal(){
+  const w = WR.cur; if(!w) return;
+  $("#wrRevWord").textContent = w.en;
+  $("#wrRevIpa").textContent = w.ipa || "";
+  $("#wrRevMean").textContent = w.vi;
+  $("#wrRevEx").textContent = (w.ex || "").replace("___", w.en);
+  const mn = $("#wrRevMnem");
+  if(w.mnemonic){ mn.hidden = false; mn.textContent = w.mnemonic; } else mn.hidden = true;
+  $("#wrReveal").hidden = false;
+}
+function showWriteGrades(){
+  const w = WR.cur; if(!w) return;
+  const p = prog[w.en];
+  const prev = q => formatInterval(calcNext(p, q).interval);
+  $("#wrIntAgain").textContent = "<1m";
+  $("#wrIntHard").textContent = prev(3);
+  $("#wrIntGood").textContent = prev(4);
+  $("#wrIntEasy").textContent = prev(5);
+  $("#wrGrades").hidden = false;
+}
+function markCheck(correct, msg){
+  WR.checked = true; WR.correct = correct;
+  WR.sessionCount++; if(correct) WR.sessionCorrect++;
+  const stamp = $("#wrStamp");
+  stamp.className = "stamp" + (correct ? "" : " miss");
+  stamp.textContent = correct ? "ĐÚNG" : "SAI";
+  void stamp.offsetWidth; stamp.classList.add("show");
+  $("#wrMsg").textContent = msg || (correct ? "Đúng rồi. Tự chấm để cập nhật SRS." : "Chưa đúng. Xem đáp án rồi tự chấm.");
+  showWriteReveal();
+  showWriteGrades();
+  $("#wrProgress").textContent = `Từ ${WR.idx+1}/${WR.queue.length} · Đúng ${WR.sessionCorrect}/${WR.sessionCount}`;
+  if(correct) speak(WR.cur.en, 1);
+}
+function wrGradeCard(quality){
+  const w = WR.cur; if(!w || !WR.checked) return;
+  const newP = calcNext(prog[w.en], quality);
+  prog[w.en] = newP; saveProg();
+  reviewLog.total = (reviewLog.total||0) + 1;
+  if(quality >= 3) reviewLog.correct = (reviewLog.correct||0) + 1;
+  const dk = String(today());
+  reviewLog.byDay = reviewLog.byDay || {};
+  reviewLog.byDay[dk] = (reviewLog.byDay[dk] || 0) + 1;
+  saveReviewLog();
+  bumpStreak();
+  updateDashboard();
+  renderSchedule();
+  WR.idx++;
+  renderWrite();
+}
+
+/* Chế độ 1: Điền chỗ trống */
+function checkFill(){
+  const w = WR.cur; if(!w || WR.checked) return;
+  const typed = normalize($("#wrFillInput").value);
+  if(!typed) return;
+  const correct = typed === normalize(w.en);
+  markCheck(correct, correct ? "Điền đúng." : `Bạn gõ: "${$("#wrFillInput").value}". Đáp án: ${w.en}.`);
+  if(!correct){
+    const highlight = (w.ex || "").replace("___", `<mark>${w.en}</mark>`);
+    $("#wrRevEx").innerHTML = highlight;
+  }
+}
+$("#wrFillCheck").addEventListener("click", checkFill);
+$("#wrFillInput").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); checkFill(); } });
+$("#wrFillHint").addEventListener("click", () => {
+  if(!WR.cur) return;
+  const w = WR.cur.en;
+  $("#wrHint").textContent = `${w[0]}${" _".repeat(w.length - 1)}  ·  ${w.length} chữ  ·  ${WR.cur.ipa}`;
+});
+$("#wrFillReveal").addEventListener("click", () => {
+  if(!WR.cur || WR.checked) return;
+  markCheck(false, "Đã xem đáp án — cân nhắc Quên/Khó.");
+});
+
+/* Chế độ 2: Nghe chép */
+function playDict(rate){
+  if(!WR.cur) return;
+  const sent = (WR.cur.ex || WR.cur.en).replace("___", WR.cur.en);
+  speak(sent, rate || 0.9);
+}
+$("#wrDictPlay").addEventListener("click", () => playDict(0.9));
+$("#wrDictSlow").addEventListener("click", () => playDict(0.6));
+$("#wrDictRepeat").addEventListener("click", () => playDict(0.9));
+function checkDict(){
+  const w = WR.cur; if(!w || WR.checked) return;
+  const target = (w.ex || w.en).replace("___", w.en);
+  const typed = normalize($("#wrDictInput").value);
+  const norm_t = normalize(target);
+  const correct = typed === norm_t;
+  let msg;
+  if(correct) msg = "Chép chính xác!";
+  else {
+    const acc = similarity(typed, norm_t);
+    msg = `Khớp ${Math.round(acc*100)}% với câu gốc. Đáp án: "${target}".`;
+  }
+  markCheck(correct, msg);
+}
+$("#wrDictCheck").addEventListener("click", checkDict);
+$("#wrDictReveal").addEventListener("click", () => {
+  if(!WR.cur || WR.checked) return;
+  const target = (WR.cur.ex || WR.cur.en).replace("___", WR.cur.en);
+  markCheck(false, `Đã xem đáp án: "${target}".`);
+});
+
+/* Chế độ 3: Dịch V→E */
+function checkTrans(){
+  const w = WR.cur; if(!w || WR.checked) return;
+  const typed = normalize($("#wrTransInput").value);
+  if(!typed) return;
+  const correct = typed === normalize(w.en);
+  markCheck(correct, correct ? "Dịch đúng." : `Bạn gõ: "${$("#wrTransInput").value}". Đáp án: ${w.en}.`);
+}
+$("#wrTransCheck").addEventListener("click", checkTrans);
+$("#wrTransInput").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); checkTrans(); } });
+$("#wrTransHintBtn").addEventListener("click", () => {
+  if(!WR.cur) return;
+  const w = WR.cur.en;
+  $("#wrHint").textContent = `${w[0]}${" _".repeat(w.length - 1)}  ·  ${w.length} chữ`;
+});
+$("#wrTransReveal").addEventListener("click", () => {
+  if(!WR.cur || WR.checked) return;
+  markCheck(false, "Đã xem đáp án — cân nhắc Quên/Khó.");
+});
+
+/* Chế độ 4: AI chấm câu tự tạo */
+async function checkSentence(){
+  const w = WR.cur; if(!w || WR.checked) return;
+  const sentence = $("#wrSentInput").value.trim();
+  if(!sentence){ $("#wrMsg").textContent = "Nhập câu tiếng Anh của bạn trước."; return; }
+  const key = ($("#apiKey").value || "").trim();
+  const model = $("#genModel").value || "gemini|gemini-2.5-flash";
+  if(!key){ $("#wrMsg").textContent = "Cần API key. Dán ở tab Luyện phát âm → Đổi danh sách từ."; return; }
+  $("#wrMsg").textContent = "AI đang chấm…";
+  $("#wrSentCheck").disabled = true;
+  try{
+    const prompt = `Đánh giá câu tiếng Anh sau về: (1) ngữ pháp, (2) dùng đúng nghĩa của từ mục tiêu, (3) tự nhiên/collocation. Từ mục tiêu: "${w.en}" (nghĩa: ${w.vi}). Câu học sinh: "${sentence}". Trả về JSON với keys: {"score": số từ 0 đến 5, "correct": bool, "feedback_vi": "phản hồi tiếng Việt ngắn gọn 1-2 câu", "fix": "câu đã sửa (nếu có)"}`;
+    const [provider, modelId] = model.split("|");
+    let out;
+    if(provider === "gemini"){
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${encodeURIComponent(key)}`;
+      const body = { contents:[{parts:[{text: prompt}]}], generationConfig:{response_mime_type:"application/json", temperature:0.3} };
+      const r = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)});
+      const j = await r.json();
+      const text = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0].text;
+      out = JSON.parse(text);
+    } else {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body: JSON.stringify({model: modelId, max_tokens: 512, messages:[{role:"user", content: prompt + "\n\nChỉ trả về JSON hợp lệ, không có markdown."}]})
+      });
+      const j = await r.json();
+      const text = j.content && j.content[0] && j.content[0].text;
+      out = JSON.parse(text.replace(/```json|```/g, "").trim());
+    }
+    const correct = !!out.correct || (out.score || 0) >= 4;
+    const feedback = out.feedback_vi || "";
+    const fix = out.fix || "";
+    let msg = `Điểm ${out.score || 0}/5 — ${feedback}`;
+    if(fix && fix !== sentence) msg += `\nGợi ý sửa: "${fix}"`;
+    markCheck(correct, msg);
+  }catch(err){
+    $("#wrMsg").textContent = "Lỗi AI: " + (err && err.message || err);
+  }finally{
+    $("#wrSentCheck").disabled = false;
+  }
+}
+$("#wrSentCheck").addEventListener("click", checkSentence);
+$("#wrSentSkip").addEventListener("click", () => {
+  if(!WR.cur || WR.checked) return;
+  markCheck(false, "Bỏ qua — coi như chưa nhớ.");
+});
+
+/* Điều hướng */
+$("#wrPrev").addEventListener("click", () => { WR.idx = (WR.idx - 1 + WR.queue.length) % WR.queue.length; renderWrite(); });
+$("#wrNext").addEventListener("click", () => { WR.idx = (WR.idx + 1) % WR.queue.length; renderWrite(); });
+$("#wrShuffle").addEventListener("click", () => { WR.queue = shuffle(WR.queue); WR.idx = 0; renderWrite(); });
+document.querySelectorAll(".submode").forEach(b => {
+  b.addEventListener("click", () => switchWriteMode(b.dataset.mode));
+});
+document.querySelectorAll("#wrGrades .srs-btn").forEach(b => {
+  b.addEventListener("click", () => wrGradeCard(parseInt(b.dataset.q, 10)));
+});
 
 /* ---------------- Bàn cờ ---------------- */
 const G = {teams:[], turn:0, cells:[], busy:false, over:false, deck:[], lastRound:false, timer:null, sound:false, gen:0};
@@ -2753,6 +3168,7 @@ fillEditor();
 renderLab();
 buildBoard();
 startRecall(false);
+startWrite();
 renderFilters(); buildVQueue(); nextVerb(); renderVTable();
 $("#rcStoreNote").textContent = store.ok
   ? "Tiến độ lưu ngay trong trình duyệt của mỗi bạn, không gửi đi đâu. Đổi máy hoặc xóa lịch sử là mất."
