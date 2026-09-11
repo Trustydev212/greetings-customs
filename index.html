@@ -382,6 +382,51 @@ textarea.short{min-height:110px}
 .vrow:hover{background:rgba(18,32,54,.06)}
 .vrow.head{font-weight:800;border-bottom:2px solid rgba(18,32,54,.3)}
 .vrow .vi{color:rgba(18,32,54,.7)}
+/* ---------- Ngữ pháp (Phase 5) ---------- */
+.gr-card{padding:22px 24px}
+.gr-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px dashed rgba(18,32,54,.18)}
+.gr-nav{display:flex;gap:8px;align-items:center}
+.gr-nav .pill{background:rgba(18,32,54,.08);color:var(--ink);padding:6px 12px;border-radius:99px;font-size:13px;font-weight:700}
+.gr-section{margin-top:16px}
+.gr-section h3{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.gr-rule{padding:10px 14px;background:rgba(224,168,46,.18);border-left:4px solid var(--gold);border-radius:6px;line-height:1.55;font-size:15px;color:var(--ink)}
+.gr-form{display:block;padding:8px 14px;background:rgba(18,32,54,.06);border-radius:6px;margin-bottom:6px;font-family:"Courier New",monospace;font-weight:700;font-size:14.5px;color:var(--ink)}
+.gr-ex{padding:8px 14px;margin:6px 0;background:rgba(27,122,98,.1);border-left:3px solid var(--teal);border-radius:6px;font-size:14.5px;line-height:1.5;color:var(--ink)}
+.gr-ex b{color:var(--teal);font-weight:700}
+.gr-ex small{display:block;margin-top:2px;color:rgba(18,32,54,.65);font-size:13px;font-style:italic}
+.gr-ex button.tts{background:transparent;color:var(--teal);cursor:pointer;font-size:14px;margin-left:6px}
+.gr-exercise{padding:12px 14px;margin:10px 0;background:#fff;border:1.5px solid rgba(18,32,54,.14);border-radius:8px}
+[data-theme="dark"] .gr-exercise{background:var(--paper-2)}
+.gr-exercise.right{border-color:var(--teal);background:rgba(27,122,98,.08)}
+.gr-exercise.wrong{border-color:var(--red);background:rgba(179,58,46,.08)}
+.gr-q{font-size:15px;color:var(--ink);line-height:1.55}
+.gr-q .blank{display:inline-block;min-width:100px;border-bottom:2px solid var(--ink);text-align:center;padding:0 6px;font-weight:700}
+.gr-q input.gr-blank{
+  border:none;border-bottom:2px solid var(--teal);background:transparent;
+  font:inherit;font-weight:700;color:var(--ink);text-align:center;
+  padding:2px 6px;min-width:120px;max-width:280px;
+}
+.gr-q input.gr-blank:focus{outline:none;border-bottom-color:var(--gold);background:rgba(224,168,46,.12)}
+.gr-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.gr-opts button{
+  padding:10px 12px;border-radius:8px;background:rgba(18,32,54,.06);color:var(--ink);
+  font-weight:600;font-size:14px;border:1.5px solid rgba(18,32,54,.14);text-align:left;
+  transition:all .12s ease;
+}
+.gr-opts button:hover{background:rgba(18,32,54,.12)}
+.gr-opts button.picked{background:var(--navy);color:var(--paper)}
+.gr-opts button.right{background:var(--teal);color:var(--paper);border-color:var(--teal)}
+.gr-opts button.wrong{background:var(--red);color:var(--paper);border-color:var(--red)}
+.gr-feedback{margin-top:8px;font-size:13.5px;color:rgba(18,32,54,.7)}
+.gr-feedback.ok{color:var(--teal);font-weight:700}
+.gr-feedback.no{color:var(--red);font-weight:700}
+.gr-check{margin-top:8px}
+@media (max-width:480px){
+  .gr-card{padding:16px 14px}
+  .gr-header h2{font-size:20px}
+  .gr-form{font-size:13px;padding:8px 10px}
+}
+
 /* ---------- Deep-dive modal (Phase 4b) ---------- */
 .modal-backdrop{
   position:fixed;inset:0;background:rgba(5,11,24,.75);
@@ -586,8 +631,8 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
     <div class="modal-body">
       <div class="dd-section">
         <h3>🖼️ Hình minh họa</h3>
-        <div class="dd-image" id="ddImage"><span class="dd-loading">Đang tải…</span></div>
-        <small class="hint">Nguồn: Unsplash · LoremFlickr (miễn phí, có thể không luôn khớp 100%)</small>
+        <div class="dd-image" id="ddImage"><span class="dd-loading">Đang tra Wikipedia…</span></div>
+        <small class="hint">Nguồn: Wikipedia thumbnail (khớp khái niệm gốc — nếu không có sẽ hiện placeholder)</small>
       </div>
       <div class="dd-section">
         <h3>🧠 Từ liên quan</h3>
@@ -627,8 +672,9 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
     <button class="tab" role="tab" id="tab-match" aria-selected="false" aria-controls="p-match" title="Phím tắt: 2">Nối từ</button>
     <button class="tab" role="tab" id="tab-recall" aria-selected="false" aria-controls="p-recall" title="Phím tắt: 3">Nhớ lại (SRS)</button>
     <button class="tab" role="tab" id="tab-write" aria-selected="false" aria-controls="p-write" title="Phím tắt: 4">Luyện viết & nghe</button>
-    <button class="tab" role="tab" id="tab-verb" aria-selected="false" aria-controls="p-verb" title="Phím tắt: 5">Động từ V1 V2 V3</button>
-    <button class="tab" role="tab" id="tab-game" aria-selected="false" aria-controls="p-game" title="Phím tắt: 6">Bàn cờ lớp học</button>
+    <button class="tab" role="tab" id="tab-grammar" aria-selected="false" aria-controls="p-grammar" title="Phím tắt: 5">Ngữ pháp</button>
+    <button class="tab" role="tab" id="tab-verb" aria-selected="false" aria-controls="p-verb" title="Phím tắt: 6">Động từ V1 V2 V3</button>
+    <button class="tab" role="tab" id="tab-game" aria-selected="false" aria-controls="p-game" title="Phím tắt: 7">Bàn cờ lớp học</button>
   </nav>
   <button id="btnTheme" class="theme-toggle" type="button" aria-label="Đổi giao diện sáng/tối" title="Đổi sáng/tối (T)">🌙</button>
 </header>
@@ -928,7 +974,45 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
   </div>
 </section>
 
-<!-- ============ 5. ĐỘNG TỪ ============ -->
+<!-- ============ 5. NGỮ PHÁP ============ -->
+<section class="panel" id="p-grammar" role="tabpanel" aria-labelledby="tab-grammar">
+  <div class="paper card gr-card">
+    <div class="gr-header">
+      <div>
+        <h2 id="grTitle" style="font-size:26px;line-height:1.2">—</h2>
+        <p id="grSubtitle" style="margin:6px 0 0;font-size:14px;color:rgba(18,32,54,.6)">—</p>
+      </div>
+      <div class="gr-nav">
+        <button class="btn ghost small" id="grPrev">← Điểm trước</button>
+        <span id="grIdx" class="pill">1/1</span>
+        <button class="btn ghost small" id="grNext">Điểm tiếp →</button>
+      </div>
+    </div>
+
+    <div class="gr-section">
+      <h3>📖 Nguyên tắc</h3>
+      <div id="grRule">—</div>
+    </div>
+
+    <div class="gr-section">
+      <h3>🏗️ Cấu trúc</h3>
+      <div id="grForms">—</div>
+    </div>
+
+    <div class="gr-section">
+      <h3>💡 Ví dụ</h3>
+      <div id="grExamples">—</div>
+    </div>
+
+    <div class="gr-section">
+      <h3>✍️ Bài tập <button class="btn ghost small" id="grReset" style="margin-left:8px">Làm lại</button> <button class="btn ghost small" id="grShowAll">Hiện đáp án</button></h3>
+      <div id="grExercises">—</div>
+      <div id="grScore" class="score-line" style="margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. ĐỘNG TỪ ============ -->
 <section class="panel" id="p-verb" role="tabpanel" aria-labelledby="tab-verb">
   <div class="paper" style="padding:20px">
     <div class="match-head">
@@ -1811,7 +1895,7 @@ function listen(target, onResult){
 }
 
 /* ---------------- Tabs ---------------- */
-const panels = {"tab-lab":"p-lab","tab-match":"p-match","tab-recall":"p-recall","tab-write":"p-write","tab-verb":"p-verb","tab-game":"p-game"};
+const panels = {"tab-lab":"p-lab","tab-match":"p-match","tab-recall":"p-recall","tab-write":"p-write","tab-grammar":"p-grammar","tab-verb":"p-verb","tab-game":"p-game"};
 function activateTab(tabId){
   const t = document.getElementById(tabId);
   if(!t) return;
@@ -1821,6 +1905,7 @@ function activateTab(tabId){
   if(tabId==="tab-match" && !matchState.started) newMatch();
   if(tabId==="tab-recall") startRecall(false);
   if(tabId==="tab-write" && typeof startWrite === "function") startWrite();
+  if(tabId==="tab-grammar" && typeof renderGrammar === "function") renderGrammar();
 }
 document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click",()=>activateTab(t.id));
@@ -1868,7 +1953,7 @@ document.addEventListener("keydown", (e) => {
     wrGradeCard(map[key]);
     return;
   }
-  const tabMap = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-write","5":"tab-verb","6":"tab-game"};
+  const tabMap = {"1":"tab-lab","2":"tab-match","3":"tab-recall","4":"tab-write","5":"tab-grammar","6":"tab-verb","7":"tab-game"};
   if(tabMap[key]){ e.preventDefault(); activateTab(tabMap[key]); return; }
   if(key === "t" || key === "T"){ e.preventDefault(); $("#btnTheme").click(); return; }
   if(recallOn){
@@ -2032,6 +2117,7 @@ function switchUnit(key){
   newMatch();
   if(typeof startRecall === "function") startRecall(false);
   if(typeof startWrite === "function") startWrite();
+  if(typeof renderGrammar === "function"){ GR.pointIdx = 0; GR.answers = {}; GR.checked = {}; renderGrammar(); }
 }
 populateLevelSelect();
 populateUnitSelect();
@@ -2121,6 +2207,451 @@ $("#btnTestVoice").addEventListener("click", () => {
 });
 refreshVoicePicker();
 
+/* ---------------- 5. Ngữ pháp (Phase 5) ---------------- */
+const GRAMMAR = {
+  unit1: {
+    points: [
+      {
+        title: "Past Continuous — Quá khứ tiếp diễn",
+        rule: "Dùng <b>was/were + V-ing</b> để diễn tả hành động đang xảy ra tại một thời điểm cụ thể trong quá khứ, hoặc một hành động dài đang diễn ra thì bị hành động ngắn khác (Simple Past) cắt ngang.",
+        forms: [
+          "(+) I / He / She / It  +  WAS  +  V-ing",
+          "(+) You / We / They  +  WERE  +  V-ing",
+          "(−) S  +  was/were  +  NOT  +  V-ing",
+          "(?) Was/Were  +  S  +  V-ing?",
+          "Dấu hiệu: at 8pm yesterday, at that time, when + Simple Past, while + Past Continuous"
+        ],
+        examples: [
+          {en:"I was reading a book when she called me.", vi:"Tôi đang đọc sách thì cô ấy gọi tôi."},
+          {en:"They were having dinner at 7pm last night.", vi:"Họ đang ăn tối lúc 7 giờ tối qua."},
+          {en:"While she was cooking, the phone rang.", vi:"Trong khi cô ấy đang nấu ăn, điện thoại reo."},
+          {en:"What were you doing this morning?", vi:"Sáng nay bạn đang làm gì?"},
+          {en:"He wasn't sleeping when I got home.", vi:"Anh ấy không đang ngủ khi tôi về nhà."}
+        ],
+        exercises: [
+          {type:"fill", q:"When I called you last night, you ___ (sleep).", answer:"were sleeping", hint:"you + were + V-ing"},
+          {type:"fill", q:"They ___ (watch) TV at 9pm yesterday.", answer:"were watching"},
+          {type:"mc", q:"Choose correct: 'She ___ the dishes when the guests arrived.'", options:["washed","was washing","were washing","is washing"], answer:1, hint:"Long action interrupted → Past Continuous"},
+          {type:"mc", q:"Choose correct: 'What ___ when the earthquake hit?'", options:["you were doing","were you doing","did you do","you did"], answer:1, hint:"Question form: Was/Were + S + V-ing"},
+          {type:"fill", q:"While we ___ (walk) in the park, it started to rain.", answer:"were walking"},
+          {type:"transform", q:"Convert to negative: 'He was playing football.'", answer:"He was not playing football.", hint:"Chấp nhận cả 'wasn't playing football.'"}
+        ]
+      },
+      {
+        title: "Direct Objects with tell / ask",
+        rule: "Cấu trúc <b>tell somebody something</b> và <b>ask somebody something</b>. TELL luôn có object người ở giữa; SAY thì không.",
+        forms: [
+          "tell + SB + (that) + clause  →  She told me (that) she was busy.",
+          "say + (that) + clause  →  She said (that) she was busy.  (KHÔNG 'say me')",
+          "ask + SB + question  →  I asked her where she lived.",
+          "SAI: She said me the news.  →  She told me the news. / She said the news to me."
+        ],
+        examples: [
+          {en:"She told me about her trip.", vi:"Cô ấy kể cho tôi về chuyến đi."},
+          {en:"She said (that) she was tired.", vi:"Cô ấy nói cô ấy mệt."},
+          {en:"Ask him what time it is.", vi:"Hỏi anh ấy mấy giờ rồi."},
+          {en:"Don't tell anyone my secret!", vi:"Đừng kể bí mật của tôi cho ai!"}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose: 'He ___ me his phone number.'", options:["said","told","asked","spoke"], answer:1},
+          {type:"mc", q:"Choose: 'She ___ (that) she couldn't come.'", options:["told","said","asked","spoke"], answer:1},
+          {type:"fill", q:"I ___ (ask) him for directions but he didn't know.", answer:"asked"},
+          {type:"transform", q:"Wrong: 'She said me the truth.' Fix it.", answer:"She told me the truth.", hint:"Chấp nhận cả 'She said the truth to me.'"}
+        ]
+      }
+    ]
+  },
+  unit2: {
+    points: [
+      {
+        title: "Would rather — Muốn hơn / Thà rằng",
+        rule: "<b>would rather</b> dùng để nói về sự thích/chọn cái này hơn cái khác. Theo sau là <b>động từ nguyên mẫu không TO</b>.",
+        forms: [
+          "S + would rather + V (bare) + than + V (bare)",
+          "S + would rather NOT + V (bare)",
+          "Would you rather + V + or + V?",
+          "Viết tắt: 'd rather"
+        ],
+        examples: [
+          {en:"I'd rather stay home than go out tonight.", vi:"Tôi thà ở nhà hơn là ra ngoài tối nay."},
+          {en:"She would rather not talk about it.", vi:"Cô ấy không muốn nói về chuyện đó."},
+          {en:"Would you rather have tea or coffee?", vi:"Bạn muốn trà hay cà phê hơn?"}
+        ],
+        exercises: [
+          {type:"fill", q:"I'd rather ___ (watch) a comedy than a horror movie.", answer:"watch", hint:"would rather + V nguyên mẫu"},
+          {type:"mc", q:"Choose: 'She'd rather ___ home.'", options:["to stay","stay","staying","stayed"], answer:1},
+          {type:"transform", q:"Rewrite using 'would rather': 'I prefer tea to coffee.'", answer:"I would rather have tea than coffee.", hint:"Chấp nhận cả 'I'd rather have tea than coffee.'"}
+        ]
+      },
+      {
+        title: "So + adj + that / Such + noun + that",
+        rule: "Diễn tả nguyên nhân — kết quả cực đoan. Dùng <b>so + tính từ/trạng từ + that</b>, hoặc <b>such + (a/an) + (adj) + danh từ + that</b>.",
+        forms: [
+          "so + ADJ/ADV + that + clause",
+          "such + (a/an) + ADJ + NOUN + that + clause",
+          "Ví dụ: so hot → 'It was so hot that I couldn't sleep.'",
+          "Ví dụ: such a hot day → 'It was such a hot day that I couldn't sleep.'"
+        ],
+        examples: [
+          {en:"The movie was so boring that I fell asleep.", vi:"Phim quá chán đến nỗi tôi ngủ mất."},
+          {en:"It was such a beautiful sunset that we took many pictures.", vi:"Đó là một hoàng hôn đẹp đến nỗi chúng tôi chụp rất nhiều hình."},
+          {en:"She spoke so quickly that no one understood.", vi:"Cô ấy nói nhanh đến nỗi không ai hiểu."}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose: 'It was ___ cold ___ we stayed inside.'", options:["so / that","such / that","very / because","too / to"], answer:0},
+          {type:"mc", q:"Choose: 'He is ___ a nice guy ___ everyone likes him.'", options:["so / that","such / that","very / that","too / that"], answer:1},
+          {type:"fill", q:"The food was ___ delicious ___ we ate it all.  (2 từ)", answer:"so that", hint:"Dùng cấu trúc so + adj + that"}
+        ]
+      }
+    ]
+  },
+  unit3: {
+    points: [
+      {
+        title: "Comparatives với as ... as (bằng)",
+        rule: "So sánh bằng: <b>as + adj/adv + as</b>. Phủ định: <b>not as ... as</b> hoặc <b>not so ... as</b>.",
+        forms: [
+          "(+) S1 + V + as + adj/adv + as + S2",
+          "(−) S1 + V + not as + adj/adv + as + S2",
+          "Với số lượng: as much/many + N + as",
+          "Idioms: as easy as pie, as cold as ice, as busy as a bee"
+        ],
+        examples: [
+          {en:"He is as tall as his brother.", vi:"Anh ấy cao bằng anh trai."},
+          {en:"This test isn't as difficult as the last one.", vi:"Bài kiểm tra này không khó bằng lần trước."},
+          {en:"She works as hard as her colleagues.", vi:"Cô ấy làm việc chăm chỉ như đồng nghiệp."},
+          {en:"I don't have as much time as you.", vi:"Tôi không có nhiều thời gian bằng bạn."}
+        ],
+        exercises: [
+          {type:"fill", q:"Tom is ___ tall ___ his father. (Tom cao bằng bố)", answer:"as as", hint:"as + adj + as (nhập 'as as')"},
+          {type:"mc", q:"Choose: 'This bag is ___ heavy ___ that one.'", options:["as / than","as / as","so / that","more / than"], answer:1},
+          {type:"transform", q:"Change to comparative: 'John and Mike are the same height.' → 'John is ___ ___ ___ Mike.'", answer:"as tall as", hint:"Dùng as + adj + as"}
+        ]
+      },
+      {
+        title: "Present participial phrases",
+        rule: "Cụm phân từ hiện tại (<b>V-ing</b>) dùng như tính từ để bổ nghĩa cho danh từ, thường thay cho mệnh đề quan hệ. Rút gọn 'who/which + is/are + V-ing' → 'V-ing'.",
+        forms: [
+          "The man WHO IS standing over there is my uncle.  →  The man standing over there is my uncle.",
+          "The girl WHO IS wearing a red dress is my sister.  →  The girl wearing a red dress is my sister."
+        ],
+        examples: [
+          {en:"The boy playing football is my brother.", vi:"Cậu bé đang đá bóng là em trai tôi."},
+          {en:"Do you know the woman waiting outside?", vi:"Bạn có biết người phụ nữ đang đợi ngoài kia không?"},
+          {en:"I saw a man carrying a big suitcase.", vi:"Tôi thấy một người đàn ông đang xách chiếc va li lớn."}
+        ],
+        exercises: [
+          {type:"fill", q:"Rút gọn: 'The children WHO ARE playing in the park are happy.' → 'The children ___ ___ ___ ___ are happy.'", answer:"playing in the park", hint:"Bỏ 'who are', giữ V-ing"},
+          {type:"mc", q:"Choose: 'Look at that guy ___ in the corner!'", options:["stand","stands","standing","stood"], answer:2},
+          {type:"transform", q:"Rút gọn: 'The bus which is coming now is late.' → 'The bus ___ ___ is late.'", answer:"coming now", hint:"Bỏ 'which is'"}
+        ]
+      }
+    ]
+  },
+  unit4: {
+    points: [
+      {
+        title: "Modals of Necessity: must / have to / need to / had better",
+        rule: "Diễn tả sự cần thiết, bắt buộc. <b>must</b>: bắt buộc từ người nói. <b>have to</b>: bắt buộc từ hoàn cảnh/luật. <b>had better</b>: khuyên nên (kèm cảnh báo hậu quả).",
+        forms: [
+          "must + V (bare)  ·  quá khứ: had to",
+          "have/has to + V (bare)  ·  neg: don't/doesn't have to (KHÔNG cần)",
+          "had better (not) + V (bare)  ·  Ngắn gọn: 'd better",
+          "need to + V (bare)  ·  neg: don't need to"
+        ],
+        examples: [
+          {en:"You must wear a seatbelt in the car.", vi:"Bạn phải thắt dây an toàn trong xe."},
+          {en:"I have to leave now — I'm late.", vi:"Tôi phải đi ngay — trễ rồi."},
+          {en:"You'd better see a doctor.", vi:"Bạn nên đi khám bác sĩ."},
+          {en:"You don't have to come if you're busy.", vi:"Bạn không cần đến nếu bạn bận."}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose: 'It's late. I ___ go home now.'", options:["must","can","would","could"], answer:0},
+          {type:"mc", q:"Choose: 'You ___ pay — the entry is free.'", options:["must not","don't have to","had better not","should"], answer:1, hint:"'don't have to' = không cần thiết. 'must not' = cấm."},
+          {type:"fill", q:"You ___ ___ (better/see) a dentist soon.", answer:"had better see", hint:"had better + V (bare)"}
+        ]
+      }
+    ]
+  },
+  unit5: {
+    points: [
+      {
+        title: "Passive Voice — Câu bị động",
+        rule: "Chuyển từ chủ động sang bị động khi muốn nhấn mạnh đối tượng bị tác động. Công thức chung: <b>be + past participle (V3)</b>.",
+        forms: [
+          "Simple Present:   S + am/is/are + V3      (The book is written by him.)",
+          "Simple Past:      S + was/were + V3       (The book was written last year.)",
+          "Present Perfect:  S + has/have been + V3  (The book has been read.)",
+          "Future:           S + will be + V3        (The book will be published.)",
+          "Modal:            S + modal + be + V3     (It must be done today.)"
+        ],
+        examples: [
+          {en:"English is spoken in many countries.", vi:"Tiếng Anh được nói ở nhiều nước."},
+          {en:"The letter was sent yesterday.", vi:"Bức thư đã được gửi hôm qua."},
+          {en:"The project has been completed.", vi:"Dự án đã được hoàn thành."},
+          {en:"The bridge will be built next year.", vi:"Cây cầu sẽ được xây năm tới."}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose passive: 'They built the school in 1990.'", options:["The school built in 1990.","The school is built in 1990.","The school was built in 1990.","The school has built in 1990."], answer:2},
+          {type:"transform", q:"Active → Passive: 'Someone stole my bike yesterday.' → 'My bike ___ ___ yesterday.'", answer:"was stolen"},
+          {type:"fill", q:"This song ___ (write) by a famous singer in 2020.", answer:"was written"}
+        ]
+      }
+    ]
+  },
+  unit6: {
+    points: [
+      {
+        title: "Used to — Đã từng làm (thói quen quá khứ)",
+        rule: "<b>used to + V (bare)</b>: diễn tả thói quen/tình trạng trong quá khứ mà giờ không còn nữa. Khác với <b>be used to + V-ing/N</b> (đã quen với).",
+        forms: [
+          "(+) S + used to + V (bare)      → I used to smoke.",
+          "(−) S + didn't use to + V       → I didn't use to eat vegetables.",
+          "(?) Did + S + use to + V?       → Did you use to live here?",
+          "So sánh: be used to + V-ing = quen với việc",
+          "         I am used to waking up early. (Tôi quen dậy sớm)"
+        ],
+        examples: [
+          {en:"I used to play basketball every day.", vi:"Tôi từng chơi bóng rổ mỗi ngày."},
+          {en:"She didn't use to like coffee.", vi:"Cô ấy từng không thích cà phê."},
+          {en:"He is used to working late.", vi:"Anh ấy quen với việc làm khuya."}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose: 'I ___ to be shy, but now I'm confident.'", options:["use","used","using","am using"], answer:1},
+          {type:"mc", q:"Choose: 'She is used to ___ up early.'", options:["wake","waking","woke","woken"], answer:1, hint:"be used to + V-ing"},
+          {type:"fill", q:"Did you ___ ___ (play) football when you were young? (2 từ)", answer:"use to", hint:"Câu hỏi: Did + S + USE to + V"}
+        ]
+      }
+    ]
+  },
+  unit7: {
+    points: [
+      {
+        title: "Gerunds vs Infinitives (V-ing vs to V)",
+        rule: "Một số động từ theo sau bằng <b>V-ing</b> (gerund), số khác bằng <b>to V</b> (infinitive). Một số cho cả hai với nghĩa khác nhau.",
+        forms: [
+          "V + V-ing: enjoy, avoid, finish, mind, suggest, practice, quit, keep, consider",
+          "V + to V: want, decide, plan, hope, promise, agree, refuse, need, learn",
+          "V + both, same meaning: like, love, hate, prefer, begin, start, continue",
+          "V + both, DIFFERENT meaning: stop, remember, forget, try, regret",
+          "  stop TO V = dừng lại ĐỂ làm  ·  stop V-ING = dừng làm việc đó",
+          "Sau giới từ (about, of, in, for...) luôn dùng V-ing"
+        ],
+        examples: [
+          {en:"I enjoy reading books.", vi:"Tôi thích đọc sách."},
+          {en:"She decided to move to Hanoi.", vi:"Cô ấy quyết định chuyển đến Hà Nội."},
+          {en:"He stopped smoking last year.", vi:"Anh ấy đã bỏ hút thuốc năm ngoái."},
+          {en:"He stopped to smoke a cigarette.", vi:"Anh ấy dừng lại để hút một điếu thuốc."},
+          {en:"I'm interested in learning Japanese.", vi:"Tôi hứng thú với việc học tiếng Nhật."}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose: 'She avoided ___ him at the party.'", options:["meet","to meet","meeting","met"], answer:2, hint:"avoid + V-ing"},
+          {type:"mc", q:"Choose: 'I want ___ a new laptop.'", options:["buy","to buy","buying","bought"], answer:1},
+          {type:"fill", q:"He is good at ___ (play) the guitar.", answer:"playing", hint:"Sau giới từ 'at' → V-ing"},
+          {type:"fill", q:"Remember ___ (lock) the door before you leave.", answer:"to lock", hint:"remember TO V = nhớ làm; remember V-ING = nhớ đã làm"}
+        ]
+      }
+    ]
+  },
+  unit8: {
+    points: [
+      {
+        title: "The Passive Causative — nhờ ai làm gì",
+        rule: "Cấu trúc <b>have/get + object + past participle (V3)</b>: nhờ/thuê ai đó làm việc gì (không phải mình tự làm).",
+        forms: [
+          "S + have/has + O + V3        → I had my hair cut yesterday.",
+          "S + get/gets + O + V3        → She got her car fixed.",
+          "Quá khứ: had/got + O + V3",
+          "Tương lai: will have/get + O + V3"
+        ],
+        examples: [
+          {en:"I have my hair cut every month.", vi:"Tôi đi cắt tóc mỗi tháng."},
+          {en:"She got her nails done for the wedding.", vi:"Cô ấy đi làm móng để dự đám cưới."},
+          {en:"We had our house painted last summer.", vi:"Chúng tôi thuê sơn nhà mùa hè năm ngoái."}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose: 'I need to have my phone ___.'", options:["repair","to repair","repaired","repairing"], answer:2},
+          {type:"fill", q:"She had her car ___ (wash) yesterday.", answer:"washed"},
+          {type:"transform", q:"Rewrite: 'Someone fixes my computer.' (nhờ ai đó sửa) → 'I ___ ___ ___ ___.'", answer:"have my computer fixed", hint:"have + O + V3"}
+        ]
+      }
+    ]
+  },
+  unit9: {
+    points: [
+      {
+        title: "Conditionals — Câu điều kiện",
+        rule: "3 loại câu điều kiện chính: <b>Loại 1</b> (có thật, tương lai), <b>Loại 2</b> (không thật, hiện tại), <b>Loại 3</b> (không thật, quá khứ).",
+        forms: [
+          "Type 0 (chân lý): If + S + V(s), S + V(s).         (If you heat water, it boils.)",
+          "Type 1 (có thật): If + S + V(s), S + will + V.     (If it rains, I will stay home.)",
+          "Type 2 (giả sử):  If + S + V2, S + would + V.      (If I had money, I would travel.)",
+          "Type 3 (quá khứ): If + S + had V3, S + would have V3. (If I had studied, I would have passed.)",
+          "Với modal khác would: could, might, may + V"
+        ],
+        examples: [
+          {en:"If it rains tomorrow, we will cancel the picnic.", vi:"Nếu mai trời mưa, chúng ta sẽ hủy dã ngoại."},
+          {en:"If I were you, I would take that job.", vi:"Nếu tôi là bạn, tôi sẽ nhận việc đó."},
+          {en:"If she had left earlier, she would have caught the train.", vi:"Nếu cô ấy đi sớm hơn, cô ấy đã bắt kịp tàu."},
+          {en:"Unless you study, you won't pass.", vi:"Trừ khi bạn học, bạn sẽ không đậu. (unless = if not)"}
+        ],
+        exercises: [
+          {type:"mc", q:"Choose (Type 1): 'If you ___ hard, you will succeed.'", options:["work","worked","would work","had worked"], answer:0},
+          {type:"mc", q:"Choose (Type 2): 'If I ___ rich, I would buy a house.'", options:["am","was","were","had been"], answer:2, hint:"Loại 2 dùng 'were' cho tất cả ngôi"},
+          {type:"mc", q:"Choose (Type 3): 'If she ___ me, I would have helped.'", options:["asked","would ask","had asked","asks"], answer:2},
+          {type:"fill", q:"If it ___ (be) sunny tomorrow, we ___ (go) to the beach.  (Type 1, cách nhau bởi dấu phẩy)", answer:"is , will go", hint:"Gõ 'is , will go' — có dấu phẩy giữa"}
+        ]
+      }
+    ]
+  }
+};
+
+const GR = { pointIdx: 0, answers: {}, checked: {} };
+function gnorm(s){ return String(s||"").toLowerCase().trim().replace(/[.!?;,]/g,"").replace(/\s+/g," "); }
+function currentGrammarPoints(){
+  const g = GRAMMAR[currentUnitKey];
+  return (g && g.points) || [];
+}
+function renderGrammar(){
+  const points = currentGrammarPoints();
+  const u = UNITS[currentUnitKey];
+  if(!points.length){
+    $("#grTitle").textContent = "Chưa có nội dung ngữ pháp cho unit này";
+    $("#grSubtitle").textContent = u ? u.title : "";
+    $("#grRule").innerHTML = "<i style='color:rgba(18,32,54,.55)'>Sắp bổ sung.</i>";
+    $("#grForms").innerHTML = "—";
+    $("#grExamples").innerHTML = "—";
+    $("#grExercises").innerHTML = "—";
+    $("#grIdx").textContent = "0/0";
+    $("#grScore").textContent = "";
+    return;
+  }
+  GR.pointIdx = Math.min(GR.pointIdx, points.length - 1);
+  const p = points[GR.pointIdx];
+  $("#grTitle").innerHTML = p.title;
+  $("#grSubtitle").textContent = `${u ? u.title : ""}`;
+  $("#grIdx").textContent = `${GR.pointIdx + 1}/${points.length}`;
+  $("#grRule").innerHTML = `<div class="gr-rule">${p.rule}</div>`;
+  $("#grForms").innerHTML = (p.forms || []).map(f => `<code class="gr-form">${f}</code>`).join("");
+  $("#grExamples").innerHTML = (p.examples || []).map((e, i) => {
+    const btn = `<button class="tts" title="Phát âm" data-t="${e.en.replace(/"/g,"&quot;")}">🔊</button>`;
+    return `<div class="gr-ex"><b>${e.en}</b>${btn}<small>${e.vi}${e.note ? " · " + e.note : ""}</small></div>`;
+  }).join("");
+  $("#grExamples").querySelectorAll("button.tts").forEach(b => b.addEventListener("click", () => speak(b.dataset.t, 0.95)));
+  renderExercises(p);
+  updateScore();
+}
+function renderExercises(point){
+  GR.answers[GR.pointIdx] = GR.answers[GR.pointIdx] || {};
+  GR.checked[GR.pointIdx] = GR.checked[GR.pointIdx] || {};
+  const wrap = $("#grExercises");
+  wrap.innerHTML = "";
+  (point.exercises || []).forEach((ex, i) => {
+    const div = document.createElement("div");
+    div.className = "gr-exercise";
+    let qHtml = ex.q.replace(/___/g, `<span class="blank"></span>`);
+    if(ex.type === "fill" || ex.type === "transform"){
+      qHtml = `<div class="gr-q">${qHtml}</div>
+        <div style="margin-top:10px"><input class="gr-blank" data-idx="${i}" placeholder="Gõ câu trả lời…" autocomplete="off"></div>
+        <div class="gr-check"><button class="btn teal small" data-check="${i}">Kiểm tra</button></div>
+        <div class="gr-feedback" data-fb="${i}">${ex.hint ? "💡 " + ex.hint : ""}</div>`;
+    } else if(ex.type === "mc"){
+      qHtml = `<div class="gr-q">${qHtml}</div>
+        <div class="gr-opts" data-mc="${i}">${ex.options.map((o, j) => `<button data-o="${j}">${o}</button>`).join("")}</div>
+        <div class="gr-feedback" data-fb="${i}">${ex.hint ? "💡 " + ex.hint : ""}</div>`;
+    }
+    div.innerHTML = qHtml;
+    wrap.appendChild(div);
+    if(ex.type === "mc"){
+      div.querySelectorAll(`[data-mc="${i}"] button`).forEach(btn => {
+        btn.addEventListener("click", () => {
+          if(GR.checked[GR.pointIdx][i]) return;
+          div.querySelectorAll(`[data-mc="${i}"] button`).forEach(b => b.classList.remove("picked"));
+          btn.classList.add("picked");
+          const pick = parseInt(btn.dataset.o, 10);
+          GR.answers[GR.pointIdx][i] = pick;
+          const correct = pick === ex.answer;
+          GR.checked[GR.pointIdx][i] = true;
+          btn.classList.add(correct ? "right" : "wrong");
+          if(!correct){
+            div.querySelector(`[data-mc="${i}"] button[data-o="${ex.answer}"]`).classList.add("right");
+          }
+          const fb = div.querySelector(`[data-fb="${i}"]`);
+          fb.className = "gr-feedback " + (correct ? "ok" : "no");
+          fb.textContent = correct ? "✓ Đúng!" : `✗ Sai. Đáp án: "${ex.options[ex.answer]}". ${ex.hint || ""}`;
+          div.classList.add(correct ? "right" : "wrong");
+          updateScore();
+        });
+      });
+    } else {
+      const btn = div.querySelector(`[data-check="${i}"]`);
+      const inp = div.querySelector(`input[data-idx="${i}"]`);
+      const check = () => {
+        if(GR.checked[GR.pointIdx][i]) return;
+        const raw = inp.value.trim();
+        if(!raw) return;
+        GR.answers[GR.pointIdx][i] = raw;
+        const accepted = (ex.answer || "").split("|").map(s => gnorm(s));
+        const correct = accepted.includes(gnorm(raw));
+        GR.checked[GR.pointIdx][i] = true;
+        const fb = div.querySelector(`[data-fb="${i}"]`);
+        fb.className = "gr-feedback " + (correct ? "ok" : "no");
+        fb.textContent = correct ? "✓ Đúng!" : `✗ Chưa đúng. Đáp án: "${ex.answer}". ${ex.hint || ""}`;
+        div.classList.add(correct ? "right" : "wrong");
+        inp.disabled = true;
+        updateScore();
+      };
+      btn.addEventListener("click", check);
+      inp.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); check(); } });
+    }
+  });
+}
+function updateScore(){
+  const point = currentGrammarPoints()[GR.pointIdx];
+  if(!point) return;
+  const total = (point.exercises || []).length;
+  const answered = Object.keys(GR.checked[GR.pointIdx] || {}).length;
+  let correct = 0;
+  (point.exercises || []).forEach((ex, i) => {
+    if(!GR.checked[GR.pointIdx][i]) return;
+    const val = GR.answers[GR.pointIdx][i];
+    if(ex.type === "mc"){ if(val === ex.answer) correct++; }
+    else {
+      const accepted = (ex.answer || "").split("|").map(s => gnorm(s));
+      if(accepted.includes(gnorm(val))) correct++;
+    }
+  });
+  const s = $("#grScore");
+  if(answered === 0){ s.textContent = ""; return; }
+  s.textContent = `Điểm: ${correct}/${answered} (còn ${total - answered} câu)`;
+  s.style.color = correct === total ? "var(--teal)" : answered === total ? "var(--red)" : "";
+}
+$("#grPrev").addEventListener("click", () => {
+  const pts = currentGrammarPoints();
+  if(!pts.length) return;
+  GR.pointIdx = (GR.pointIdx - 1 + pts.length) % pts.length;
+  renderGrammar();
+});
+$("#grNext").addEventListener("click", () => {
+  const pts = currentGrammarPoints();
+  if(!pts.length) return;
+  GR.pointIdx = (GR.pointIdx + 1) % pts.length;
+  renderGrammar();
+});
+$("#grReset").addEventListener("click", () => {
+  GR.answers[GR.pointIdx] = {};
+  GR.checked[GR.pointIdx] = {};
+  renderGrammar();
+});
+$("#grShowAll").addEventListener("click", () => {
+  const p = currentGrammarPoints()[GR.pointIdx]; if(!p) return;
+  (p.exercises || []).forEach((ex, i) => {
+    GR.checked[GR.pointIdx][i] = true;
+    GR.answers[GR.pointIdx][i] = ex.type === "mc" ? ex.answer : ex.answer.split("|")[0];
+  });
+  renderGrammar();
+});
+
 /* ---------------- Deep-dive modal (Phase 4b) ---------------- */
 const DD_CACHE_KEY = "gc-deepdive-v1";
 const DD_TTL_MS = 30 * 24 * 3600 * 1000;
@@ -2168,16 +2699,18 @@ async function loadDeepDive(w){
   const key = String(w.en || "").toLowerCase().split(" ")[0];
   const cached = ddCacheGet(w.en);
   if(cached){
-    renderDDImage(cached.imageUrl, key);
+    renderDDImageData(cached.image, key);
     renderDDRelated(cached.related || {syn:[], ant:[], ml:[]});
     renderDDExamples(cached.examples || []);
     renderDDDefs(cached.defs || []);
     return;
   }
   const data = {};
-  /* Image: Unsplash Source (deprecated but redirects) → fallback LoremFlickr */
-  data.imageUrl = `https://source.unsplash.com/featured/480x300/?${encodeURIComponent(key)}`;
-  renderDDImage(data.imageUrl, key);
+  /* Image: Wikipedia thumbnail (relevant to actual concept) */
+  loadWikipediaImage(key).then(imgData => {
+    data.image = imgData;
+    renderDDImageData(imgData, key);
+  });
 
   /* Datamuse */
   try{
@@ -2230,19 +2763,42 @@ async function loadDeepDive(w){
   }
   ddCacheSet(w.en, data);
 }
-function renderDDImage(url, key){
+async function loadWikipediaImage(key){
+  try{
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
+    const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(key)}`, {signal: ctrl.signal});
+    clearTimeout(timer);
+    if(!r.ok) return null;
+    const j = await r.json();
+    if(j.type === "disambiguation" || !j.thumbnail) return null;
+    return {
+      url: j.thumbnail.source,
+      title: j.title,
+      extract: (j.extract || "").split(".")[0]
+    };
+  }catch(_){ return null; }
+}
+function renderDDImageData(imgData, key){
   const box = $("#ddImage");
+  if(!imgData || !imgData.url){
+    box.innerHTML = `<div style="text-align:center;padding:24px"><div style="font-size:56px;line-height:1">📖</div><div class="dd-loading" style="margin-top:8px">Wikipedia không có hình cho "${key}".</div></div>`;
+    return;
+  }
   const img = new Image();
-  img.onload = () => { box.innerHTML = ""; box.appendChild(img); };
-  img.onerror = () => {
-    const fallback = new Image();
-    fallback.onload = () => { box.innerHTML = ""; box.appendChild(fallback); };
-    fallback.onerror = () => { box.innerHTML = `<span class="dd-loading">Không tải được hình.</span>`; };
-    fallback.src = `https://loremflickr.com/480/300/${encodeURIComponent(key)}`;
-    fallback.alt = key;
-  };
-  img.src = url;
   img.alt = key;
+  img.onload = () => {
+    box.innerHTML = "";
+    box.appendChild(img);
+    if(imgData.extract){
+      const cap = document.createElement("div");
+      cap.style.cssText = "font-size:12.5px;color:rgba(18,32,54,.65);margin-top:6px;padding:0 4px;text-align:left;line-height:1.35";
+      cap.textContent = `${imgData.title}: ${imgData.extract}.`;
+      box.appendChild(cap);
+    }
+  };
+  img.onerror = () => { box.innerHTML = `<div style="text-align:center;padding:24px"><div style="font-size:56px">🖼️</div><div class="dd-loading">Không tải được hình.</div></div>`; };
+  img.src = imgData.url;
 }
 function renderDDRelated(r){
   const parts = [];
@@ -3451,6 +4007,7 @@ renderLab();
 buildBoard();
 startRecall(false);
 startWrite();
+renderGrammar();
 renderFilters(); buildVQueue(); nextVerb(); renderVTable();
 $("#rcStoreNote").textContent = store.ok
   ? "Tiến độ lưu ngay trong trình duyệt của mỗi bạn, không gửi đi đâu. Đổi máy hoặc xóa lịch sử là mất."

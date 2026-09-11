@@ -1,6 +1,6 @@
-const CACHE = "gc-v2";
+const CACHE = "gc-v3";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
-const SKIP_HOSTS = ["api.datamuse.com","en.wiktionary.org","source.unsplash.com","loremflickr.com","images.unsplash.com","generativelanguage.googleapis.com","api.anthropic.com"];
+const SKIP_HOSTS = ["api.datamuse.com","en.wiktionary.org","en.wikipedia.org","upload.wikimedia.org","generativelanguage.googleapis.com","api.anthropic.com"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
