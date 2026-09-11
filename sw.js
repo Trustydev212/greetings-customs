@@ -1,5 +1,6 @@
-const CACHE = "gc-v1";
+const CACHE = "gc-v2";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
+const SKIP_HOSTS = ["api.datamuse.com","en.wiktionary.org","source.unsplash.com","loremflickr.com","images.unsplash.com","generativelanguage.googleapis.com","api.anthropic.com"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
@@ -21,6 +22,7 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  if (SKIP_HOSTS.some((h) => url.hostname.endsWith(h))) return; // let browser handle 3rd-party APIs
 
   // Network-first for the HTML entry (so updates land immediately when online)
   if (req.mode === "navigate" || (url.origin === location.origin && (url.pathname.endsWith("/") || url.pathname.endsWith(".html")))) {

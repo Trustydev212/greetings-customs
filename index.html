@@ -382,6 +382,61 @@ textarea.short{min-height:110px}
 .vrow:hover{background:rgba(18,32,54,.06)}
 .vrow.head{font-weight:800;border-bottom:2px solid rgba(18,32,54,.3)}
 .vrow .vi{color:rgba(18,32,54,.7)}
+/* ---------- Deep-dive modal (Phase 4b) ---------- */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(5,11,24,.75);
+  display:flex;align-items:center;justify-content:center;z-index:1000;
+  padding:20px;overflow-y:auto;
+}
+.modal{
+  max-width:640px;width:100%;max-height:90vh;overflow-y:auto;
+  padding:0;position:relative;
+}
+.modal-head{padding:22px 24px 12px;border-bottom:1.5px dashed rgba(18,32,54,.18)}
+.modal-head h2{font-size:32px;line-height:1.1;margin:0}
+.modal-body{padding:16px 24px 24px}
+.modal-close{
+  position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;
+  background:rgba(18,32,54,.08);color:var(--ink);font-size:18px;font-weight:800;
+  display:grid;place-items:center;
+}
+.modal-close:hover{background:rgba(179,58,46,.15);color:var(--red)}
+.dd-section{margin-top:16px}
+.dd-section h3{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+.dd-section .hint{display:block;margin-top:4px;font-size:12px;color:rgba(18,32,54,.5)}
+.dd-loading{color:rgba(18,32,54,.5);font-style:italic;font-size:14px}
+.dd-image{
+  min-height:180px;border-radius:10px;overflow:hidden;background:rgba(18,32,54,.06);
+  display:flex;align-items:center;justify-content:center;
+}
+.dd-image img{max-width:100%;max-height:280px;object-fit:cover;display:block;border-radius:10px}
+.dd-chip{
+  display:inline-block;margin:3px 4px 3px 0;padding:5px 12px;border-radius:99px;
+  background:rgba(27,122,98,.15);color:var(--teal);font-weight:600;font-size:14px;
+  cursor:pointer;border:1.5px solid transparent;transition:all .12s ease;
+}
+.dd-chip:hover{background:var(--teal);color:var(--paper);border-color:var(--teal)}
+.dd-chip.ant{background:rgba(179,58,46,.12);color:var(--red)}
+.dd-chip.ant:hover{background:var(--red);color:var(--paper)}
+.dd-ex{
+  padding:8px 12px;background:rgba(224,168,46,.15);border-radius:8px;
+  margin:6px 0;font-size:14.5px;line-height:1.4;color:var(--ink);
+}
+.dd-def{
+  padding:8px 12px;background:rgba(18,32,54,.05);border-radius:8px;
+  margin:6px 0;font-size:14px;line-height:1.5;color:var(--ink);
+}
+.dd-def b{color:var(--red);text-transform:uppercase;font-size:11px;letter-spacing:.05em;display:block;margin-bottom:2px}
+[data-theme="dark"] .modal-close{background:rgba(237,231,212,.1);color:var(--paper)}
+[data-theme="dark"] .dd-image{background:rgba(237,231,212,.05)}
+@media (max-width:480px){
+  .modal-backdrop{padding:8px}
+  .modal-head{padding:16px 18px 10px}
+  .modal-head h2{font-size:26px}
+  .modal-body{padding:12px 18px 20px}
+  .dd-section h3{font-size:13.5px}
+}
+
 /* ---------- Luyện viết & nghe (sub-modes) ---------- */
 .submodes{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px}
 .submode{
@@ -518,6 +573,41 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
 </style>
 </head>
 <body>
+
+<!-- ============ Deep-dive modal (Phase 4b) ============ -->
+<div class="modal-backdrop" id="ddBackdrop" hidden aria-hidden="true">
+  <div class="modal paper" role="dialog" aria-modal="true" aria-labelledby="ddTitle">
+    <button class="modal-close" id="ddClose" aria-label="Đóng">✕</button>
+    <div class="modal-head">
+      <h2 id="ddTitle">—</h2>
+      <div id="ddIpa" class="ipa">—</div>
+      <div id="ddMean" style="font-size:15px;color:rgba(18,32,54,.7);margin-top:4px">—</div>
+    </div>
+    <div class="modal-body">
+      <div class="dd-section">
+        <h3>🖼️ Hình minh họa</h3>
+        <div class="dd-image" id="ddImage"><span class="dd-loading">Đang tải…</span></div>
+        <small class="hint">Nguồn: Unsplash · LoremFlickr (miễn phí, có thể không luôn khớp 100%)</small>
+      </div>
+      <div class="dd-section">
+        <h3>🧠 Từ liên quan</h3>
+        <div id="ddRelated"><span class="dd-loading">Đang tải…</span></div>
+        <small class="hint">Nguồn: Datamuse — bấm 1 từ để phát âm nhanh</small>
+      </div>
+      <div class="dd-section">
+        <h3>📚 Câu ví dụ thêm</h3>
+        <div id="ddExamples"><span class="dd-loading">Đang tải…</span></div>
+        <small class="hint">Nguồn: Wiktionary (English)</small>
+      </div>
+      <div class="dd-section">
+        <h3>📖 Định nghĩa gốc</h3>
+        <div id="ddDefs"><span class="dd-loading">Đang tải…</span></div>
+        <small class="hint">Nguồn: Wiktionary</small>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="wrap">
 
 <header class="top">
@@ -565,6 +655,7 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
         <button class="btn" id="btnSlow">Nghe chậm</button>
         <button class="btn red" id="btnRec">Nói lại</button>
         <button class="btn ghost" id="btnEx">Đọc câu ví dụ</button>
+        <button class="btn ghost" id="btnDeepDive">🔍 Xem sâu</button>
       </div>
 
       <div class="verdict">
@@ -579,6 +670,13 @@ footer{margin-top:34px;font-size:13.5px;color:rgba(241,231,210,.55);text-align:c
       </div>
 
       <div class="autoplay-panel" role="group" aria-label="Tự động nghe và nhép theo">
+        <div class="autoplay-row" style="border-bottom:1.5px dashed rgba(18,32,54,.15);padding-bottom:10px;margin-bottom:10px">
+          <label>🔊 Giọng đọc
+            <select id="voicePicker" class="ap-sel" style="max-width:280px" title="⭐ = Neural/Enhanced (chất lượng cao) · 🌐 = giọng cloud (cần internet)"></select>
+          </label>
+          <button class="btn ghost small" id="btnTestVoice" type="button">▶ Nghe thử</button>
+          <small style="font-size:12px;color:rgba(18,32,54,.55)">Windows: cài "Enhanced" voices trong Settings → Time&Language → Speech</small>
+        </div>
         <div class="autoplay-row">
           <label>Lặp mỗi từ
             <input type="number" id="apRepeat" min="1" max="10" value="3" class="ap-num">lần
@@ -1640,12 +1738,40 @@ function similarity(a,b){
 }
 
 /* ---------------- Giọng đọc ---------------- */
-let enVoice=null;
+const VOICE_KEY = "gc-voice-v1";
+let enVoice = null;
+let allEnVoices = [];
+function scoreVoice(v){
+  const n = (v.name || "").toLowerCase();
+  let s = 0;
+  if(/en[-_]us/i.test(v.lang)) s += 10;
+  else if(/en[-_]gb/i.test(v.lang)) s += 8;
+  else if(/^en/i.test(v.lang)) s += 5;
+  if(/neural|natural|premium|enhanced|studio|wavenet/.test(n)) s += 20;
+  if(/google|microsoft|apple/.test(n)) s += 6;
+  if(/aria|jenny|guy|samantha|karen|daniel|alex|victoria/.test(n)) s += 4;
+  if(v.localService === false) s += 2;
+  return s;
+}
 function pickVoice(){
   const vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-  enVoice = vs.find(v=>/en[-_]US/i.test(v.lang)&&/natural|google|samantha|aria/i.test(v.name))
-         || vs.find(v=>/en[-_]US/i.test(v.lang))
-         || vs.find(v=>/^en/i.test(v.lang)) || null;
+  allEnVoices = vs.filter(v => /^en/i.test(v.lang)).sort((a,b) => scoreVoice(b) - scoreVoice(a));
+  let savedName = null;
+  try{ savedName = localStorage.getItem(VOICE_KEY); }catch(_){}
+  const saved = savedName ? allEnVoices.find(v => v.name === savedName) : null;
+  enVoice = saved || allEnVoices[0] || null;
+  refreshVoicePicker();
+}
+function refreshVoicePicker(){
+  const sel = document.getElementById("voicePicker");
+  if(!sel || !allEnVoices.length) return;
+  const cur = enVoice ? enVoice.name : "";
+  sel.innerHTML = allEnVoices.map(v => {
+    const tags = [];
+    if(/neural|natural|premium|enhanced|studio|wavenet/i.test(v.name)) tags.push("⭐");
+    if(v.localService === false) tags.push("🌐");
+    return `<option value="${v.name.replace(/"/g,"&quot;")}"${v.name===cur?" selected":""}>${tags.join("")} ${v.name} · ${v.lang}</option>`;
+  }).join("");
 }
 if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 function speak(text, rate){
@@ -1984,6 +2110,162 @@ function stopAutoplay(){
 $("#btnAutoPlay").addEventListener("click", runAutoplay);
 $("#btnPrev").addEventListener("click", stopAutoplay);
 $("#btnNext").addEventListener("click", stopAutoplay);
+$("#voicePicker").addEventListener("change", (e) => {
+  const name = e.target.value;
+  const v = allEnVoices.find(x => x.name === name);
+  if(v){ enVoice = v; try{ localStorage.setItem(VOICE_KEY, v.name); }catch(_){} }
+});
+$("#btnTestVoice").addEventListener("click", () => {
+  const w = WORDS[li] || {en:"hello, this is a preview of my voice"};
+  speak(w.en || "hello", 1);
+});
+refreshVoicePicker();
+
+/* ---------------- Deep-dive modal (Phase 4b) ---------------- */
+const DD_CACHE_KEY = "gc-deepdive-v1";
+const DD_TTL_MS = 30 * 24 * 3600 * 1000;
+function ddCacheGet(word){
+  try{
+    const all = JSON.parse(localStorage.getItem(DD_CACHE_KEY) || "{}");
+    const item = all[word];
+    if(!item || (Date.now() - (item.at||0)) > DD_TTL_MS) return null;
+    return item;
+  }catch(_){ return null; }
+}
+function ddCacheSet(word, data){
+  try{
+    const all = JSON.parse(localStorage.getItem(DD_CACHE_KEY) || "{}");
+    all[word] = Object.assign({}, data, {at: Date.now()});
+    const keys = Object.keys(all);
+    if(keys.length > 200){
+      keys.sort((a,b) => (all[a].at||0) - (all[b].at||0));
+      keys.slice(0, keys.length - 200).forEach(k => delete all[k]);
+    }
+    localStorage.setItem(DD_CACHE_KEY, JSON.stringify(all));
+  }catch(_){}
+}
+function openDeepDive(){
+  const w = WORDS[li]; if(!w) return;
+  $("#ddBackdrop").hidden = false;
+  $("#ddTitle").textContent = w.en;
+  $("#ddIpa").textContent = w.ipa || "";
+  $("#ddMean").textContent = w.vi;
+  $("#ddImage").innerHTML = `<span class="dd-loading">Đang tải hình…</span>`;
+  $("#ddRelated").innerHTML = `<span class="dd-loading">Đang tải từ liên quan…</span>`;
+  $("#ddExamples").innerHTML = `<span class="dd-loading">Đang tải câu ví dụ…</span>`;
+  $("#ddDefs").innerHTML = `<span class="dd-loading">Đang tải định nghĩa…</span>`;
+  loadDeepDive(w);
+}
+function closeDeepDive(){
+  $("#ddBackdrop").hidden = true;
+}
+$("#btnDeepDive").addEventListener("click", openDeepDive);
+$("#ddClose").addEventListener("click", closeDeepDive);
+$("#ddBackdrop").addEventListener("click", (e) => { if(e.target === $("#ddBackdrop")) closeDeepDive(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && !$("#ddBackdrop").hidden){ closeDeepDive(); }});
+
+async function loadDeepDive(w){
+  const key = String(w.en || "").toLowerCase().split(" ")[0];
+  const cached = ddCacheGet(w.en);
+  if(cached){
+    renderDDImage(cached.imageUrl, key);
+    renderDDRelated(cached.related || {syn:[], ant:[], ml:[]});
+    renderDDExamples(cached.examples || []);
+    renderDDDefs(cached.defs || []);
+    return;
+  }
+  const data = {};
+  /* Image: Unsplash Source (deprecated but redirects) → fallback LoremFlickr */
+  data.imageUrl = `https://source.unsplash.com/featured/480x300/?${encodeURIComponent(key)}`;
+  renderDDImage(data.imageUrl, key);
+
+  /* Datamuse */
+  try{
+    const [syn, ant, ml] = await Promise.all([
+      fetch(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(key)}&max=8`).then(r => r.json()).catch(() => []),
+      fetch(`https://api.datamuse.com/words?rel_ant=${encodeURIComponent(key)}&max=5`).then(r => r.json()).catch(() => []),
+      fetch(`https://api.datamuse.com/words?ml=${encodeURIComponent(key)}&max=8`).then(r => r.json()).catch(() => [])
+    ]);
+    data.related = {
+      syn: (syn||[]).map(x => x.word).slice(0,8),
+      ant: (ant||[]).map(x => x.word).slice(0,5),
+      ml: (ml||[]).map(x => x.word).slice(0,8)
+    };
+    renderDDRelated(data.related);
+  }catch(err){
+    $("#ddRelated").innerHTML = `<span class="dd-loading">Không tải được từ liên quan (Datamuse).</span>`;
+    data.related = {syn:[], ant:[], ml:[]};
+  }
+
+  /* Wiktionary: definitions + examples */
+  try{
+    const r = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(key)}`);
+    if(!r.ok) throw new Error("no wik");
+    const j = await r.json();
+    const en = j.en || [];
+    const defs = [], exs = [];
+    en.forEach(section => {
+      const pos = section.partOfSpeech || "";
+      (section.definitions || []).forEach(d => {
+        const def = (d.definition || "").replace(/<[^>]+>/g, "").trim();
+        if(def) defs.push({pos, def});
+        (d.examples || []).forEach(ex => {
+          const clean = (ex || "").replace(/<[^>]+>/g, "").trim();
+          if(clean) exs.push(clean);
+        });
+        (d.parsedExamples || []).forEach(pex => {
+          const text = (pex.example || "").replace(/<[^>]+>/g, "").trim();
+          if(text) exs.push(text);
+        });
+      });
+    });
+    data.defs = defs.slice(0, 5);
+    data.examples = exs.slice(0, 4);
+    renderDDDefs(data.defs);
+    renderDDExamples(data.examples);
+  }catch(err){
+    $("#ddDefs").innerHTML = `<span class="dd-loading">Wiktionary không có mục cho "${key}".</span>`;
+    $("#ddExamples").innerHTML = `<span class="dd-loading">Không có câu ví dụ thêm.</span>`;
+    data.defs = []; data.examples = [];
+  }
+  ddCacheSet(w.en, data);
+}
+function renderDDImage(url, key){
+  const box = $("#ddImage");
+  const img = new Image();
+  img.onload = () => { box.innerHTML = ""; box.appendChild(img); };
+  img.onerror = () => {
+    const fallback = new Image();
+    fallback.onload = () => { box.innerHTML = ""; box.appendChild(fallback); };
+    fallback.onerror = () => { box.innerHTML = `<span class="dd-loading">Không tải được hình.</span>`; };
+    fallback.src = `https://loremflickr.com/480/300/${encodeURIComponent(key)}`;
+    fallback.alt = key;
+  };
+  img.src = url;
+  img.alt = key;
+}
+function renderDDRelated(r){
+  const parts = [];
+  if(r.syn && r.syn.length) parts.push(`<div><small class="hint" style="font-size:12px">Đồng nghĩa</small><div>${r.syn.map(w => `<button class="dd-chip" data-w="${w}">${w}</button>`).join("")}</div></div>`);
+  if(r.ml && r.ml.length){
+    const unique = r.ml.filter(x => !(r.syn||[]).includes(x));
+    if(unique.length) parts.push(`<div style="margin-top:8px"><small class="hint" style="font-size:12px">Nghĩa liên quan</small><div>${unique.map(w => `<button class="dd-chip" data-w="${w}">${w}</button>`).join("")}</div></div>`);
+  }
+  if(r.ant && r.ant.length) parts.push(`<div style="margin-top:8px"><small class="hint" style="font-size:12px">Trái nghĩa</small><div>${r.ant.map(w => `<button class="dd-chip ant" data-w="${w}">${w}</button>`).join("")}</div></div>`);
+  const html = parts.join("") || `<span class="dd-loading">Không có dữ liệu liên quan.</span>`;
+  $("#ddRelated").innerHTML = html;
+  $("#ddRelated").querySelectorAll(".dd-chip").forEach(b => {
+    b.addEventListener("click", () => speak(b.dataset.w, 1));
+  });
+}
+function renderDDExamples(exs){
+  if(!exs.length){ $("#ddExamples").innerHTML = `<span class="dd-loading">Không có câu ví dụ thêm.</span>`; return; }
+  $("#ddExamples").innerHTML = exs.map(e => `<div class="dd-ex">${e}</div>`).join("");
+}
+function renderDDDefs(defs){
+  if(!defs.length){ $("#ddDefs").innerHTML = `<span class="dd-loading">Không có định nghĩa.</span>`; return; }
+  $("#ddDefs").innerHTML = defs.map(d => `<div class="dd-def"><b>${d.pos || "def"}</b>${d.def}</div>`).join("");
+}
 
 $("#btnCopyWords").addEventListener("click",async()=>{
   try{ await navigator.clipboard.writeText($("#editArea").value); alert("Đã sao chép. Dán vào biến DEFAULT_WORDS trong index.html để lớp không cần tạo lại."); }
