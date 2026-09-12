@@ -807,12 +807,16 @@ select option,.ap-sel option,.unit-select option,#voicePicker option{
    GAME BOARD (Bàn cờ)
    ============================================================ */
 .setup{padding:var(--sp-4) var(--sp-5);margin-bottom:var(--sp-4)}
-.setup .row{justify-content:flex-start}
-.field{display:flex;align-items:center;gap:var(--sp-2);font-weight:600;font-size:var(--fs-sm)}
+.setup .row{justify-content:flex-start;margin-top:0}
+.field{
+  display:inline-flex;align-items:center;gap:var(--sp-2);
+  font-weight:500;font-size:var(--fs-sm);color:var(--text-2);
+}
 .field input{
-  width:70px;padding:6px 10px;border-radius:var(--r-sm);
-  border:1px solid var(--border-strong);font:inherit;
-  background:var(--surface);color:var(--text);
+  width:64px;height:32px;padding:0 10px;border-radius:var(--r-sm);
+  border:1px solid var(--border-strong);font:inherit;font-family:var(--font-mono);
+  background:var(--surface);color:var(--text);text-align:center;
+  transition:border-color var(--dur-fast) var(--ease);
 }
 .field input:focus-visible{border-color:var(--accent);outline:none;box-shadow:var(--sh-focus)}
 
@@ -858,52 +862,57 @@ select option,.ap-sel option,.unit-select option,#voicePicker option{
 /* Game stage (center) */
 .stage{
   grid-column:2 / 8;grid-row:2 / 6;
-  background:var(--surface-2);color:var(--text);
+  background:var(--surface);color:var(--text);
   border:1px solid var(--border);
   border-radius:var(--r-lg);
-  padding:var(--sp-4);
+  padding:var(--sp-5);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-3);
   text-align:center;position:relative;overflow:hidden;
 }
 .badge{
-  display:inline-flex;align-items:center;gap:var(--sp-2);
-  padding:5px 14px;border-radius:var(--r-pill);
-  font-weight:700;font-size:var(--fs-sm);
-  color:#fff;box-shadow:var(--sh-sm);
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:var(--r-pill);
+  font-weight:600;font-size:var(--fs-xs);
+  color:#fff;letter-spacing:.02em;
 }
 .prompt{
   font-family:var(--font-display);font-weight:800;
-  font-size:clamp(24px,4.4vw,42px);line-height:1.15;margin:0;
-  letter-spacing:-.02em;color:var(--text);
+  font-size:clamp(22px,4.2vw,38px);line-height:1.1;margin:0;
+  letter-spacing:-.028em;color:var(--text);
 }
-.prompt.sentence{font-size:clamp(16px,2.6vw,26px);line-height:1.35;font-weight:600;max-width:24ch}
-.sub{font-size:var(--fs-sm);color:var(--text-muted);margin:0;font-weight:500}
-.turn{font-size:var(--fs-sm);font-weight:600;color:var(--text-2);margin:0}
+.prompt.sentence{font-size:clamp(15px,2.4vw,22px);line-height:1.4;font-weight:500;max-width:28ch;letter-spacing:-.008em;font-style:italic;color:var(--text-2)}
+.sub{
+  font-size:11px;color:var(--text-muted);margin:0;
+  font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+}
+.turn{font-size:var(--fs-xs);font-weight:500;color:var(--text-muted);margin:0}
 
 .die{
-  width:96px;height:96px;border-radius:var(--r-lg);
+  width:92px;height:92px;border-radius:var(--r-lg);
   background:var(--accent);color:var(--accent-text);
-  font-family:var(--font-display);font-weight:800;font-size:52px;
+  font-family:var(--font-display);font-weight:800;font-size:48px;
   display:grid;place-items:center;
   box-shadow:var(--sh-md);
+  letter-spacing:-.03em;
 }
 .die.roll{animation:tumble .6s cubic-bezier(.3,.9,.3,1)}
 @keyframes tumble{0%{transform:rotate(0) scale(1)}45%{transform:rotate(220deg) scale(.75)}100%{transform:rotate(360deg) scale(1)}}
 
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);width:100%;max-width:620px}
 .opt{
-  padding:12px;border-radius:var(--r-md);
-  background:var(--surface);color:var(--text);
-  border:1px solid var(--border);
-  font-weight:600;font-size:var(--fs-sm);
-  transition:all var(--dur-fast) var(--ease);
+  padding:10px 14px;border-radius:var(--r-sm);
+  background:var(--surface-2);color:var(--text);
+  border:1px solid var(--border-strong);
+  font-weight:500;font-size:var(--fs-sm);
+  transition:background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  letter-spacing:-.005em;text-align:left;line-height:1.35;
 }
-.opt:hover:not([disabled]){background:var(--surface-2);border-color:var(--accent);transform:translateY(-1px)}
-.opt.good{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
-.opt.bad{background:var(--danger);color:#fff;border-color:var(--danger)}
+.opt:hover:not([disabled]){background:var(--surface);border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.opt.good{background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:600}
+.opt.bad{background:var(--danger);color:#fff;border-color:var(--danger);font-weight:600}
 .opt[disabled]{cursor:default}
 
-.bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--surface-3)}
+.bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--surface-3);border-radius:0}
 .bar i{display:block;height:100%;width:100%;background:var(--accent);transition:width 1s linear}
 .bar i.warn{background:var(--warning)}
 .bar i.hot{background:var(--danger)}
@@ -911,12 +920,17 @@ select option,.ap-sel option,.unit-select option,#voicePicker option{
 .podium{display:flex;flex-direction:column;gap:var(--sp-1);width:100%;max-width:420px}
 .prow{
   display:flex;align-items:center;gap:var(--sp-3);
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-md);padding:var(--sp-2) var(--sp-3);
-  font-weight:600;font-size:var(--fs-sm);
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:8px 12px;
+  font-weight:500;font-size:var(--fs-sm);
 }
-.prow .pp{margin-left:auto;font-family:var(--font-display);font-size:var(--fs-lg)}
-.prow.first{background:var(--warning-soft);border-color:var(--warning);color:var(--text)}
+.prow .pp{margin-left:auto;font-family:var(--font-display);font-size:var(--fs-md);font-weight:700;font-feature-settings:"tnum";letter-spacing:-.01em}
+.prow.first{background:var(--warning-soft);border-color:var(--warning);color:var(--text);font-weight:600}
+.prow.first::before{
+  content:"1";display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;background:var(--warning);color:#fff;
+  border-radius:50%;font-size:11px;font-weight:800;font-family:var(--font-display);
+}
 
 /* Score panel */
 .scores{padding:var(--sp-5)}
@@ -938,18 +952,22 @@ select option,.ap-sel option,.unit-select option,#voicePicker option{
 }
 .team .pts{margin-left:auto;font-family:var(--font-display);font-size:var(--fs-md);font-weight:700;font-feature-settings:"tnum";letter-spacing:-.01em}
 .team .lap{font-size:10.5px;font-weight:500;opacity:.65;display:block;text-transform:uppercase;letter-spacing:.04em}
-.legend{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-3);font-size:var(--fs-xs)}
+.legend{display:flex;flex-wrap:wrap;gap:5px;margin-top:var(--sp-4);font-size:11px}
 .legend span{
-  background:var(--surface-2);color:var(--text-2);
-  border-radius:var(--r-sm);padding:3px 10px;
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text-2);
+  border-radius:var(--r-sm);padding:3px 8px;
+  font-weight:500;
 }
 .rules{
-  font-size:var(--fs-sm);color:var(--text-muted);
-  margin-top:var(--sp-3);border-top:1px solid var(--border);
+  font-size:var(--fs-xs);color:var(--text-muted);
+  margin-top:var(--sp-4);border-top:1px solid var(--border);
   padding-top:var(--sp-3);padding-left:var(--sp-4);
-  line-height:1.5;
+  line-height:1.6;
 }
-.rules li{margin-bottom:var(--sp-1)}
+.rules li{margin-bottom:4px}
+.rules li::marker{color:var(--accent)}
 
 /* chế độ trình chiếu */
 body.present .wrap{max-width:none;padding:10px}
@@ -1397,6 +1415,33 @@ textarea.short{min-height:110px}
 }
 .wr-verdict{min-height:auto;margin-top:var(--sp-4)}
 .wr-verdict .heard{margin-top:var(--sp-1)}
+.wr-reveal{
+  margin-top:var(--sp-3);padding:var(--sp-4);
+  background:var(--surface-2);border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:var(--r-md);
+  text-align:left;
+  animation:panelIn .24s var(--ease);
+}
+.wr-reveal-head{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;
+  padding-bottom:var(--sp-2);border-bottom:1px solid var(--border);
+  margin-bottom:var(--sp-3);
+}
+.wr-reveal-head b{
+  font-size:var(--fs-xl);font-weight:700;color:var(--text);
+  font-family:var(--font-display);letter-spacing:-.018em;
+}
+.wr-reveal-head .ipa{font-size:var(--fs-sm);color:var(--accent);font-family:var(--font-mono)}
+.wr-reveal-mean{
+  font-size:var(--fs-sm);color:var(--text-2);
+  font-weight:500;line-height:1.5;
+}
+.wr-reveal-ex{
+  font-size:var(--fs-sm);color:var(--text-muted);
+  margin-top:6px;line-height:1.6;font-style:italic;
+}
+.wr-reveal .mnemonic{margin-top:var(--sp-3);max-width:none}
 @media (max-width:480px){
   .submode{padding:6px 10px;font-size:var(--fs-xs)}
   .wr-input{font-size:var(--fs-md);padding:10px 12px;min-width:0;width:100%}
@@ -1404,6 +1449,19 @@ textarea.short{min-height:110px}
 }
 
 /* SRS Grade buttons — Anki-style vertical stack: kbd on top, label mid, interval bottom */
+/* Recall answer reveal — grouped hero */
+.rc-answer{
+  margin-top:var(--sp-4);
+  padding:var(--sp-4) var(--sp-5);
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--r-md);
+  display:flex;flex-direction:column;align-items:center;gap:var(--sp-3);
+  animation:panelIn .28s var(--ease);
+}
+.rc-answer-top{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
 /* SRS session progress bar in recall card */
 .rc-progress-wrap{
   display:flex;align-items:center;flex-direction:column;gap:var(--sp-2);
@@ -1817,10 +1875,12 @@ footer{
     <div class="mean" id="rcMean" style="font-size:clamp(24px,4.6vw,40px);margin-top:14px">—</div>
     <p class="ex" id="rcEx"></p>
 
-    <div id="rcAnswer" hidden>
-      <div class="word" id="rcWord" style="font-size:clamp(34px,7vw,56px);margin-top:14px">—</div>
-      <div class="ipa" id="rcIpa">—</div>
-      <div class="stress" id="rcStress" hidden></div>
+    <div id="rcAnswer" class="rc-answer" hidden>
+      <div class="rc-answer-top">
+        <div class="word" id="rcWord" style="font-size:clamp(30px,6vw,44px);margin:0">—</div>
+        <div class="ipa" id="rcIpa">—</div>
+        <div class="stress" id="rcStress" hidden></div>
+      </div>
       <div class="mnemonic" id="rcMnemonic" hidden></div>
     </div>
 
@@ -1934,13 +1994,13 @@ footer{
     <div class="verdict wr-verdict">
       <div class="score-line" id="wrMsg">Chọn chế độ ở trên. Kết quả sẽ tự cập nhật vào lịch SRS của bạn.</div>
       <div class="heard" id="wrHint"></div>
-      <div id="wrReveal" hidden style="margin-top:10px;padding:10px;background:rgba(27,122,98,.1);border-radius:8px;text-align:left">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:baseline">
-          <b style="font-size:22px" id="wrRevWord">—</b>
+      <div id="wrReveal" class="wr-reveal" hidden>
+        <div class="wr-reveal-head">
+          <b id="wrRevWord">—</b>
           <span class="ipa" id="wrRevIpa">—</span>
         </div>
-        <div id="wrRevMean" style="font-size:14px;color:rgba(18,32,54,.75);margin-top:4px">—</div>
-        <div id="wrRevEx" style="font-size:13.5px;color:rgba(18,32,54,.7);margin-top:6px"></div>
+        <div class="wr-reveal-mean" id="wrRevMean">—</div>
+        <div class="wr-reveal-ex" id="wrRevEx"></div>
         <div class="mnemonic" id="wrRevMnem" hidden></div>
       </div>
     </div>
